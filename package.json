@@ -1,0 +1,46 @@
+{
+  "name": "idchain-agency",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Agency Implementation for IdentityChain Project",
+  "keywords": [],
+  "author": "SNET - TU Berlin / ING Bank",
+  "license": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "DEBUG=* nodemon --inspect -r pino-debug app.js | pino",
+    "test": "NODE_ENV=testing mocha --exit"
+  },
+  "dependencies": {
+    "ajv": "^6.5.1",
+    "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "express-pino-logger": "^3.0.1",
+    "firebase": "^5.3.0",
+    "firebase-admin": "^5.13.1",
+    "indy-sdk": "1.5.0-beta",
+    "level": "^4.0.0",
+    "mongoose": "^5.1.5",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "pino": "^4.17.3",
+    "shortid": "^2.2.12",
+    "superagent": "^3.8.3",
+    "swagger-ui-express": "^3.0.9",
+    "uuid": "^3.2.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-google": "^0.9.1",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
+    "pino-debug": "^1.1.1",
+    "supertest": "^3.1.0"
+  }
+}

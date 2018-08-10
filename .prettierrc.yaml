@@ -1,0 +1,20 @@
+# Prettier configuration
+
+printWidth: 120
+singleQuote: true
+tabWidth: 4
+useTabs: false
+
+arrowParens: avoid
+
+overrides:
+    - files: '*.json'
+      options:
+          tabWidth: 2
+          parser: json
+    - files: '*.yml'
+      options:
+          tabWidth: 2
+    - files: '*.yaml'
+      options:
+          tabWidth: 2
