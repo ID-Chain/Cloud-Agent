@@ -74,19 +74,17 @@ async function handleRegistrationReq(req) {
 
 async function handleUrlRequest(req) {
     const senderDid = req.body.senderDid;
-    const senderKey = req.body.senderKey;
     const data = req.body.data;
     const targetDid = data.targetDid;
     const id = shortid.generate();
     await db.put(targetDid, senderDid);
     await db.put(id, targetDid);
-    const didJSON = await db.get(req.wallet.config.id);
-    const verKey = didJSON.verkey;
-    const did = didJSON.did;
+    const myDid = await db.get(req.wallet.config.id);
+    const verKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
 
     return {
         type: 'getUrl',
-        senderDid: did,
+        senderDid: myDid,
         verKey: verKey,
         data: JSON.stringify({
             inboxUrl: `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/inbox/${id}`
