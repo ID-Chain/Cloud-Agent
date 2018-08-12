@@ -23,10 +23,10 @@ module.exports = {
 
     retrieve: wrap(async (req, res, next) => {
         console.log('GET request received');
+        
+        const encodedCryptedMessage = await db.get(req.params.id);
 
-        const firebaseToken = await db.get(req.params.did);
-
-        next(new APIResult(200, { firebaseToken: firebaseToken }), {
+        next(new APIResult(200, { message: encodedCryptedMessage }), {
             status: 'Ok'
         });
     })

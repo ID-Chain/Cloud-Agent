@@ -6,33 +6,34 @@ const APIResult = require('../util/api-result');
 const firebaseServer = require('../firebase/server');
 const db = require('../persistence/db');
 
+
 module.exports = {
     forward: wrap(async (req, res, next) => {
         const id = req.params.id;
         const message = req.body.message;
-        // ToDo: bin indy-sdk
-        //const recipientVk = req.wallet.ownDid;
-        //const decryptedMessage = await indy.cryptoAnonDecrypt(wh,recipientVk, message)
-        const decryptedMessage = {
-            id: 'some_did_or_nonce',
-            type: 'some_indy_message_type',
-            message: 'some_encrypted_or_plain_message_trying_bigger'
-        };
+
+        const did = await db.get(req.wallet.config.id);
+        //const messageBuf = await req.wallet.anonDecrypt(did,message);     
         const targetDid = await db.get(id);
         const senderDid = await db.get(targetDid);
         const firebaseToken = await db.get(senderDid);
 
-        // anoncrypt with senderDid
-        // keyForDid
-        const encodedDecryptedMessage = Buffer.from(JSON.stringify(decryptedMessage)).toString('base64');
+        //const encryptedMessage = req.wallet.anonCrypt(senderDid, messageBuf);
+        const encodedDecryptedMessage = Buffer.from(JSON.stringify(message)).toString('base64');
+        //const encodedCryptedMessage = Buffer.from(JSON.stringify(encryptedMessage)).toString('base64');
         const n = encodedDecryptedMessage.length;
         const byteSize = 4 * Math.ceil(n / 3);
-        if (byteSize < 4000) {
-        }
+        
 
         console.log('byte size of decrypted message:', byteSize);
+        
         try {
-            await firebaseServer.sendMessageToClient(firebaseToken, { encodedMessage: encodedDecryptedMessage });
+            let messageToSent = (byteSize < 4000)? messageToSent = encodedDecryptedMessage: (
+                urlId = shortid.generate(),
+                db.put(urlId, encodedCryptedMessage),
+                messageToSent = `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/messages/${urlId}`
+            )
+            await firebaseServer.sendMessageToClient(firebaseToken, { message: encodedDecryptedMessage });
             next(new APIResult(200, { message: 'Successfully sent to client' }), {
                 status: 'Ok'
             });

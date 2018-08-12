@@ -22,7 +22,7 @@
     "express-pino-logger": "^3.0.1",
     "firebase": "^5.3.0",
     "firebase-admin": "^5.13.1",
-    "indy-sdk": "1.5.0-beta",
+    "indy-sdk": "^1.6.1",
     "level": "^4.0.0",
     "mongoose": "^5.1.5",
     "passport": "^0.4.0",

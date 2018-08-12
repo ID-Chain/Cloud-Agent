@@ -1,5 +1,5 @@
 const shortid = require('shortid');
-const level = require('level');
+const indy = require('indy-sdk');
 
 const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
@@ -8,13 +8,12 @@ const db = require('../persistence/db');
 
 module.exports = {
     serve: wrap(async (req, res, next) => {
-        const type = req.body.type;
-        const senderDid = req.body.senderDid;
-        const data = req.body.data;
         let response = {};
+
         try {
-            response = await handleRequest(type, senderDid, data);
-            const firebaseToken = await db.get(senderDid);
+            response = await handleRequest(req);
+            // For testing purposes of LevelDB and Firebase
+            const firebaseToken = await db.get(req.body.senderDid);
             const messageId = await firebaseServer.sendMessageToClient(firebaseToken, response);
             console.log('messageId:', messageId);
             // Get Message from Request Body
@@ -44,39 +43,53 @@ module.exports = {
     })
 };
 
-async function handleRequest(type, senderDid, data) {
+async function handleRequest(req) {
     switch (
-        type // use some sort of pattern matching for this
+        req.body.type // use some sort of pattern matching for this
     ) {
         case 'register':
-            return await handleRegistrationReq(senderDid, data);
+            return await handleRegistrationReq(req);
         case 'getUrl':
-            return await handleUrlRequest(senderDid, data);
+            return await handleUrlRequest(req);
         default:
             throw new Error('Bad Request');
     }
 }
 
-async function handleRegistrationReq(senderDid, data) {
+async function handleRegistrationReq(req) {
+    const senderDid = req.body.senderDid,
+        senderKey = req.body.senderKey,
+        data = req.body.data;
+    await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
     await db.put(senderDid, data.register);
+    const myDid = await db.get(req.wallet.config.id);
+    const verKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
     return {
         type: 'register',
-        senderDid: 'putAgencyDidHere',
-        data: 'Done'
+        senderDid: myDid,
+        verKey: verKey,
+        data: 'Success'
     };
 }
 
-async function handleUrlRequest(senderDid, data) {
+async function handleUrlRequest(req) {
+    const senderDid = req.body.senderDid;
+    const senderKey = req.body.senderKey;
+    const data = req.body.data;
     const targetDid = data.targetDid;
     const id = shortid.generate();
     await db.put(targetDid, senderDid);
-    //await db.put(targetDid, id);
     await db.put(id, targetDid);
+    const didJSON = await db.get(req.wallet.config.id);
+    const verKey = didJSON.verkey;
+    const did = didJSON.did;
+
     return {
         type: 'getUrl',
-        senderDid: 'putAgencyDidHere',
+        senderDid: did,
+        verKey: verKey,
         data: JSON.stringify({
-            inboxUrl: `http:${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/inbox/${id}`
+            inboxUrl: `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/inbox/${id}`
         })
     };
 }

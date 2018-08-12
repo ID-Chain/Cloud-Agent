@@ -3,10 +3,10 @@
  * Wallet Provider Middleware
  */
 
-const {wrap, wrapEx} = require('../util/asyncwrap');
+const { wrap, wrapEx } = require('../util/asyncwrap');
 const log = require('../util/log').log;
 const NotFound = require('../util/error').NotFound;
-const Wallet = require('../models/wallet');
+const wallet = require('../wallet');
 
 /**
  * Finds and opens the wallet with walletId of user
@@ -19,44 +19,36 @@ const Wallet = require('../models/wallet');
  * @param {String} walletId wallet name
  * @return {Object} the wallet object
  */
-async function provideWallet(req, walletId) {
-  log.info('providing wallet with walletId %s for user %s',
-      walletId, req.user.username);
-  const w = await Wallet.findOne({
-      _id: walletId,
-      owner: req.user,
-    }).exec();
-  if (!w) throw new NotFound('Wallet not found');
-  await w.open();
-  req.wallet = w;
-  return w;
+async function provideWallet(req) {
+    if (!wallet) throw new NotFound('Wallet not found');
+    await wallet.openWallet();
+    req.wallet = wallet;
+    return wallet;
 }
 
 module.exports = {
-  before: wrap(async (req, res, next) => {
-    log.debug('walletProvider before');
-    const walletId = req.body.wallet || req.params.wallet || req.header('wallet');
-    if (!walletId || !req.user) return next();
-    await provideWallet(req, walletId);
-    next();
-  }),
-
-  param: wrapEx(async (req, res, next, walletId) => {
-    log.debug('walletProvider param');
-    await provideWallet(req, walletId);
-    next();
-  }),
-
-  after: [
-    wrap(async (req, res, next) => {
-      log.debug('walletProvider after');
-      if (req.wallet) await req.wallet.close();
-      next();
+    before: wrap(async (req, res, next) => {
+        log.debug('walletProvider before');
+        await provideWallet(req);
+        next();
     }),
-    wrapEx(async (result, req, res, next) => {
-      log.debug('walletProvider after result-handler');
-      if (req.wallet) await req.wallet.close();
-      next(result);
+
+    param: wrapEx(async (req, res, next, walletId) => {
+        log.debug('walletProvider param');
+        await provideWallet(req);
+        next();
     }),
-  ],
+
+    after: [
+        wrap(async (req, res, next) => {
+            log.debug('walletProvider after');
+            if (req.wallet) await req.wallet.closeWallet();
+            next();
+        }),
+        wrapEx(async (result, req, res, next) => {
+            log.debug('walletProvider after result-handler');
+            if (req.wallet) await req.wallet.closeWallet();
+            next(result);
+        })
+    ]
 };

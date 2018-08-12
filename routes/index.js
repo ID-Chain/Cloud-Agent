@@ -5,8 +5,9 @@
 const router = require('express').Router();
 
 //const auth = require('../middleware/auth');
-/* const walletProvider = require('../middleware/walletProvider');
-const user = require('../controllers/user');
+const walletProvider = require('../middleware/walletProvider');
+
+/* const user = require('../controllers/user');
 
 const schema = require('../controllers/credentialschema');
 const creddef= require('../controllers/credentialdef');
@@ -20,13 +21,17 @@ const message = require('../controllers/message');
 const service = require('../controllers/service');
 const inbox = require('../controllers/inbox');
 
+
+router.use(walletProvider.before);
+router.param('wallet', walletProvider.param);
+
 router
     .route('/messages')
     // TODO rate-limiting?
     .post(message.send)
     .get(message.retrieve);
 
-router.route('/messages/:did').get(message.retrieve);
+router.route('/messages/:id').get(message.retrieve);
 
 router.route('/services').post(service.serve);
 
@@ -38,8 +43,8 @@ router.route('');
   .post(endpoint.handle);
  */
 // router.use(auth);
-// router.use(walletProvider.before);
-// router.param('wallet', walletProvider.param);
+
+
 
 /* router.route('/user/:user')
   .get(user.retrieve)
@@ -61,6 +66,6 @@ router.route('/connection')
   .post(connection.accept);
 
 */
-// router.use(walletProvider.after);
+router.use(walletProvider.after);
 
 module.exports = router;

@@ -7,8 +7,8 @@ const os = require('os');
 const path = require('path');
 const util = require('util');
 const indy = require('indy-sdk');
-const APIResult = require('../util/api-result');
-const log = require('../util/log').log;
+const APIResult = require('./util/api-result');
+const log = require('./util/log').log;
 
 const indyHomePath = path.join(os.homedir(), '.indy_client');
 const tailsPath = path.join(indyHomePath, 'tails');
