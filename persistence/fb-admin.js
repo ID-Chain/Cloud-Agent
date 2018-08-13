@@ -1,9 +1,9 @@
 var admin = require('firebase-admin');
-const serviceAccount = require("../../eit-idchain-app-firebase-adminsdk-1pi13-80da98402a.json");
+const serviceAccount = require(process.env.FIREBASE_ADMIN_PATH);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://eit-idchain-app.firebaseio.com"
+    databaseURL: process.env.FIREBASE_PROJECT_URL
 });
 
 module.exports = admin;

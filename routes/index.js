@@ -39,33 +39,6 @@ router.route('/inbox/:id').post(inbox.forward);
 
 router.route('');
 
-/* router.route('/indy')
-  .post(endpoint.handle);
- */
-// router.use(auth);
-
-
-
-/* router.route('/user/:user')
-  .get(user.retrieve)
-  .put(user.update)
-  .delete(user.delete); 
-
-router.route('/wallet')
-  .get(wallet.list)
-  .post(wallet.create);
-
-router.route('/wallet/:wallet')
-  .get(wallet.retrieve)
-  .delete(wallet.delete);
-
-router.route('/connectionoffer')
-  .post(connection.create);
-
-router.route('/connection')
-  .post(connection.accept);
-
-*/
 router.use(walletProvider.after);
 
 module.exports = router;

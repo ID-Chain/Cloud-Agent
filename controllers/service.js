@@ -2,6 +2,7 @@ const shortid = require('shortid');
 const indy = require('indy-sdk');
 
 const wrap = require('../util/asyncwrap').wrap;
+const log = require('../util/log').log;
 const APIResult = require('../util/api-result');
 const firebaseServer = require('../firebase/server');
 const db = require('../persistence/db');
@@ -15,14 +16,7 @@ module.exports = {
             // For testing purposes of LevelDB and Firebase
             const firebaseToken = await db.get(req.body.senderDid);
             const messageId = await firebaseServer.sendMessageToClient(firebaseToken, response);
-            console.log('messageId:', messageId);
-            // Get Message from Request Body
-            // Decrypt Message based on senderDid
-            // Get recipeintDid from Message Body
-            // Find recipientDid in Level Database and return value of firebaseToken
-            // Send Firebase GCM Message to Client like this
-            // firebase.sendMessageToClient(message,firebaseToken)
-
+            log.debug('messageId:', messageId);
             next(new APIResult(200, response), {
                 status: 'Ok'
             });
@@ -30,16 +24,6 @@ module.exports = {
             if (e.message === 'Bad Request')
                 next(new APIResult(400, { statusCode: 400, error: e.message, message: 'Service type unknown' }));
         }
-    }),
-
-    retrieve: wrap(async (req, res, next) => {
-        console.log('GET request received');
-
-        const firebaseToken = await db.get(req.params.did);
-
-        next(new APIResult(200, { firebaseToken: firebaseToken }), {
-            status: 'Ok'
-        });
     })
 };
 
@@ -60,14 +44,20 @@ async function handleRegistrationReq(req) {
     const senderDid = req.body.senderDid,
         senderKey = req.body.senderKey,
         data = req.body.data;
-    await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
+
+    try {
+        await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
+    } catch (err) {
+        log.error(err);
+    }
+
     await db.put(senderDid, data.token);
     const myDid = await db.get(req.wallet.config.id);
-    const verKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
+    const myVerKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
     return {
         type: 'register',
         senderDid: myDid,
-        verKey: verKey,
+        verKey: myVerKey,
         data: 'Success'
     };
 }
@@ -80,12 +70,12 @@ async function handleUrlRequest(req) {
     await db.put(targetDid, senderDid);
     await db.put(id, targetDid);
     const myDid = await db.get(req.wallet.config.id);
-    const verKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
+    const myVerKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
 
     return {
         type: 'getUrl',
         senderDid: myDid,
-        verKey: verKey,
+        verKey: myVerKey,
         data: JSON.stringify({
             inboxUrl: `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/inbox/${id}`
         })
