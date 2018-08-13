@@ -20,7 +20,7 @@ const app = express();
 
 app.use(middleware.before);
 
-//app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use('/agency/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.use('/agency/api/', routes);
 

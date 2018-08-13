@@ -17,7 +17,7 @@ module.exports = {
             const firebaseToken = await db.get(req.body.senderDid);
             const messageId = await firebaseServer.sendMessageToClient(firebaseToken, response);
             log.debug('messageId:', messageId);
-            next(new APIResult(200, response), {
+            next(new APIResult(201, response), {
                 status: 'Ok'
             });
         } catch (e) {

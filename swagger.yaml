@@ -1,356 +1,93 @@
-openapi: 3.0.0
-servers:
-  - url: 'http://localhost'
+swagger: '2.0'
 info:
-  description: >-
-    This is an implementation of the Hyperledger Indy Agency Implementation
-    which connects mobile clients / edge agents through Google Firebase. 
-  version: 0.0.1
-  title: IDChain Agency
-  termsOfService: 'https://git.snet.tu-berlin.de/blockchain/identitychain/agency'
-  contact:
-    email: bersant.deva@tu-berlin.de
-tags:
-  - name: message
-    description: Send messages to connected agents
-  - name: registration
-    description: register your did with a temporary firebase registration token
-  - name: user
-    description: Operations about user
+  description: 'IdentityChain Agency REST API'
+  title: IdentityChain Agency API
+  version: '0.0.1'
+basePath: /agency/api
+schemes:
+  - http
+securityDefinitions:
+  basic:
+    type: basic
+consumes:
+  - application/json
+produces:
+  - application/json
+definitions:
+  service_post:
+    type: object
+    properties:
+      senderDid:
+        type: string
+      senderVerKey:
+        type: string
+      type:
+        type: string
+      data:
+        type: object
+        properties:
+            targetDid:
+              description: '(optional) Required if type=getUrl. Contains TargetDid for which the new URL inbox is requested' 
+              type: string 
+            token: 
+              description: '(optional) Required if type=register. Contains Firebase Token to be created or updated at Agency side'
+              type: string   
+    required:
+      - senderDid
+      - senderVerKey
+      - type
+      - data
+  inbox_post:
+    type: object
+    properties:
+      message:
+        description: 'Anoncrypted Message from other Edge Agents to be forwarded to mobile client'
+        type: string
 paths:
-  /message:
-    post:
-      summary: ''
-      description: ''
-      parameters: []
-      operationId: send new message to recipient
-      responses:
-        default:
-          description: Default response
-      requestBody:
-        content:
-          '*/*':
-            required: false
-            schema: {}
-        description: |-
-          { "id": "reciepientDid", 
-            "type": "typeOfMessage",
-            "message": "encrypted message"
-          }
-      callbacks: {}
-  /user:
-    post:
-      summary: ''
-      description: ''
-      parameters: []
-      operationId: register new user
-      responses:
-        default:
-          description: Default response
+  /messages/{id}/:
+    parameters:
+      - description: A unique string value identifying this message. This request is usually sent to clients through FCM.
+        in: path
+        name: id
+        required: true
+        type: string
     get:
-      summary: ''
-      description: ''
+      summary: Retrieve a message
+      description: Retrieve a message
+      responses:
+        '200':
+          description: ''
+      tags:
+        - messages
+  /services/:
+    post:
+      summary: Send a service request
+      description: Send a service request
       parameters:
-        - name: userId
-          in: path
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/service_post'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - service
+  /inbox/{id}:
+    post:
+      summary: Send a message to a mobile client using the unique URL endpoint provided by mobile edge agent.
+      description: Create a credential definition
+      parameters:
+        - in: path
+          name: id
           required: true
+          description: A unique id usually provided by the mobile edge agent as the endpoint to this agency.
+        - in: body
+          name: message
           schema:
-            type: string
-      operationId: get user
+            $ref: '#/definitions/inbox_post'
       responses:
-        default:
-          description: Default response
-    put:
-      summary: ''
-      description: ''
-      parameters: []
-      operationId: ''
-      responses:
-        default:
-          description: Default response
-externalDocs:
-  description: ''
-  url: 'https://git.snet.tu-berlin.de/blockchain/identitychain/agency/README'
-components:
-  schemas:
-    Order:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        petId:
-          type: integer
-          format: int64
-        quantity:
-          type: integer
-          format: int32
-        shipDate:
-          type: string
-          format: date-time
-        status:
-          type: string
-          description: Order Status
-          enum:
-            - placed
-            - approved
-            - delivered
-        complete:
-          type: boolean
-          default: false
-      xml:
-        name: Order
-    Category:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-      xml:
-        name: Category
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        username:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phone:
-          type: string
-        userStatus:
-          type: integer
-          format: int32
-          description: User Status
-      xml:
-        name: User
-    Tag:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-      xml:
-        name: Tag
-    Pet:
-      type: object
-      required:
-        - name
-        - photoUrls
-      properties:
-        id:
-          type: integer
-          format: int64
-        category:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-            name:
-              type: string
-          xml:
-            name: Category
-        name:
-          type: string
-          example: doggie
-        photoUrls:
-          type: array
-          xml:
-            name: photoUrl
-            wrapped: true
-          items:
-            type: string
-        tags:
-          type: array
-          xml:
-            name: tag
-            wrapped: true
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                format: int64
-              name:
-                type: string
-            xml:
-              name: Tag
-        status:
-          type: string
-          description: pet status in the store
-          enum:
-            - available
-            - pending
-            - sold
-      xml:
-        name: Pet
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        type:
-          type: string
-        message:
-          type: string
-  requestBodies:
-    Pet:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - name
-              - photoUrls
-            properties:
-              id:
-                type: integer
-                format: int64
-              category:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    format: int64
-                  name:
-                    type: string
-                xml:
-                  name: Category
-              name:
-                type: string
-                example: doggie
-              photoUrls:
-                type: array
-                xml:
-                  name: photoUrl
-                  wrapped: true
-                items:
-                  type: string
-              tags:
-                type: array
-                xml:
-                  name: tag
-                  wrapped: true
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      format: int64
-                    name:
-                      type: string
-                  xml:
-                    name: Tag
-              status:
-                type: string
-                description: pet status in the store
-                enum:
-                  - available
-                  - pending
-                  - sold
-            xml:
-              name: Pet
-        application/xml:
-          schema:
-            type: object
-            required:
-              - name
-              - photoUrls
-            properties:
-              id:
-                type: integer
-                format: int64
-              category:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    format: int64
-                  name:
-                    type: string
-                xml:
-                  name: Category
-              name:
-                type: string
-                example: doggie
-              photoUrls:
-                type: array
-                xml:
-                  name: photoUrl
-                  wrapped: true
-                items:
-                  type: string
-              tags:
-                type: array
-                xml:
-                  name: tag
-                  wrapped: true
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      format: int64
-                    name:
-                      type: string
-                  xml:
-                    name: Tag
-              status:
-                type: string
-                description: pet status in the store
-                enum:
-                  - available
-                  - pending
-                  - sold
-            xml:
-              name: Pet
-      description: Pet object that needs to be added to the store
-      required: true
-    UserArray:
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  format: int64
-                username:
-                  type: string
-                firstName:
-                  type: string
-                lastName:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-                phone:
-                  type: string
-                userStatus:
-                  type: integer
-                  format: int32
-                  description: User Status
-              xml:
-                name: User
-      description: List of user object
-      required: true
-  links: {}
-  callbacks: {}
-security: []
+        '200':
+          description: ''
+      tags:
+        - inbox
