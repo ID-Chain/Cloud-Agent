@@ -9,8 +9,6 @@ module.exports = {
         const registrationToken = req.body.id;
         const type = req.body.type;
         const message = req.body.message;
-        // console.log(registrationToken)
-        // console.log(message);
         await db.put(req.body.did, registrationToken);
         const messageId = await firebaseServer.sendMessageToClient(registrationToken, message);
         console.log('Sent Message to Client: %s', messageId);

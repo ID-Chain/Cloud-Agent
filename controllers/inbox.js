@@ -1,38 +1,41 @@
-const shortid = require('shortid');
-const level = require('level');
-
+const urlid = require('../util/urlid');
 const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
 const firebaseServer = require('../firebase/server');
 const db = require('../persistence/db');
 
-
 module.exports = {
     forward: wrap(async (req, res, next) => {
         const id = req.params.id;
+        const test = req.query.test;
         const message = req.body.message;
 
-        const did = await db.get(req.wallet.config.id);
-        //const messageBuf = await req.wallet.anonDecrypt(did,message);     
+        let encodedMessage;
+        if (!test) {
+            const did = await db.get(req.wallet.config.id);
+            const messageBuf = await req.wallet.anonDecrypt(did, message);
+            const encryptedMessage = req.wallet.anonCrypt(senderDid, messageBuf);
+            encodedMessage = Buffer.from(JSON.stringify(encryptedMessage)).toString('base64');
+        } else {
+            encodedMessage = Buffer.from(JSON.stringify(message)).toString('base64');
+        }
+
         const targetDid = await db.get(id);
         const senderDid = await db.get(targetDid);
         const firebaseToken = await db.get(senderDid);
 
-        //const encryptedMessage = req.wallet.anonCrypt(senderDid, messageBuf);
-        const encodedDecryptedMessage = Buffer.from(JSON.stringify(message)).toString('base64');
-        //const encodedCryptedMessage = Buffer.from(JSON.stringify(encryptedMessage)).toString('base64');
-        const n = encodedDecryptedMessage.length;
+        const n = encodedMessage.length;
         const byteSize = 4 * Math.ceil(n / 3);
-        
 
         console.log('byte size of decrypted message:', byteSize);
-        
+
         try {
-            let messageToSent = (byteSize < 4000)? encodedDecryptedMessage: (
-                urlId = shortid.generate(),
-                db.put(urlId, encodedDecryptedMessage),
-                `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/messages/${urlId}`
-            )
+            let messageToSent =
+                byteSize < 4000
+                    ? encodedMessage
+                    : ((urlId = urlid.generate()),
+                      db.put(urlId, encodedMessage),
+                      `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/messages/${urlId}`);
             await firebaseServer.sendMessageToClient(firebaseToken, { message: messageToSent });
             next(new APIResult(200, { message: 'Successfully sent to client' }), {
                 status: 'Ok'

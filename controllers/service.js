@@ -1,4 +1,4 @@
-const shortid = require('shortid');
+const urlid = require('../util/urlid');
 const indy = require('indy-sdk');
 
 const wrap = require('../util/asyncwrap').wrap;
@@ -23,6 +23,7 @@ module.exports = {
         } catch (e) {
             if (e.message === 'Bad Request')
                 next(new APIResult(400, { statusCode: 400, error: e.message, message: 'Service type unknown' }));
+            else next(new APIResult(next(400, { statusCode: 500, error: e.message, message: e.message })))
         }
     })
 };
@@ -66,7 +67,7 @@ async function handleUrlRequest(req) {
     const senderDid = req.body.senderDid;
     const data = req.body.data;
     const targetDid = data.targetDid;
-    const id = shortid.generate();
+    const id = urlid.generate();
     await db.put(targetDid, senderDid);
     await db.put(id, targetDid);
     const myDid = await db.get(req.wallet.config.id);

@@ -73,7 +73,7 @@ const wallet = new AgencyWallet({ id: process.env.AGENCY_WALLET_NAME }, { key: p
 module.exports = wallet;
 
 /**
- * ToDo: To be implemented
+ * ToDo: To be implemented if required
  * 
  *  
   schema.method('cryptoSign', async function(signKey, messageBuf) {
