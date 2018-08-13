@@ -61,7 +61,7 @@ async function handleRegistrationReq(req) {
         senderKey = req.body.senderKey,
         data = req.body.data;
     await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
-    await db.put(senderDid, data.register);
+    await db.put(senderDid, data.token);
     const myDid = await db.get(req.wallet.config.id);
     const verKey = await indy.keyForLocalDid(req.wallet.handle, myDid);
     return {
