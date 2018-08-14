@@ -231,7 +231,6 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
 
 ### Vim ###
 # swap
