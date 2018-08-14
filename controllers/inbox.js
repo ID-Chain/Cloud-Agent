@@ -26,17 +26,23 @@ module.exports = {
 
         const n = encodedMessage.length;
         const byteSize = 4 * Math.ceil(n / 3);
+        let dataType;
 
         console.log('byte size of decrypted message:', byteSize);
 
         try {
             let messageToSent =
                 byteSize < 4000
-                    ? encodedMessage
-                    : ((urlId = urlid.generate()),
+                    ? ((dataType = 'data'), encodedMessage)
+                    : ((dataType = 'url'),
+                      (urlId = urlid.generate()),
                       db.put(urlId, encodedMessage),
                       `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/messages/${urlId}`);
-            await firebaseServer.sendMessageToClient(firebaseToken, { message: messageToSent });
+            await firebaseServer.sendMessageToClient(firebaseToken, {
+                senderDid: senderDid,
+                type: dataType,
+                message: messageToSent
+            });
             next(new APIResult(200, { message: 'Successfully sent to client' }), {
                 status: 'Ok'
             });
