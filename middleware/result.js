@@ -4,6 +4,8 @@
  */
 
 const log = require('../util/log').log;
+const db = require('../persistence/db');
+
 
 const internalServerError = 500;
 const badRequest = 400;
@@ -163,7 +165,7 @@ const indyCodes = {
 };
 
 module.exports = {
-  resultMiddleware: (result, req, res, next) => {
+  resultMiddleware: async (result, req, res, next) => {
     log.info('result: ', result);
     if (result instanceof Error || result.error) {
       return next(result.error || result);
@@ -171,6 +173,7 @@ module.exports = {
     if (result.status) res.status(result.status);
     if (result.data) res.json(result.data);
     res.end();
+    if(req.finalCallback) req.finalCallback();
   },
   errorMiddleware: (err, req, res, next) => {
     log.error('error: ', err);
@@ -180,3 +183,7 @@ module.exports = {
     return res.status(err.status || 500).json({message: err.message});
   },
 };
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

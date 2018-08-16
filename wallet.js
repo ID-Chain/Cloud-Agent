@@ -15,13 +15,35 @@ class AgencyWallet {
             this.handle = await indy.openWallet(this.config, this.credentials);
             // const didJSON = data.seed ? { seed: data.seed } : {};
             const didJSON = {};
-            const [did] = await indy.createAndStoreMyDid(this.handle, didJSON);
+            const [did,verkey] = await indy.createAndStoreMyDid(this.handle, didJSON);
+
+            /**
+            let message = {
+                    id: 'unique_request_nonce_uuid',
+                    type: 'urn:sovrin:agent:message_type:sovrin.org/connection_request',
+                    message:{
+                    did: did,
+                    verkey: verkey,
+                    endpoint: 'https://example.com/ca/api/blabla',
+                    nonce: unique_request_nonce_uuid
+                }
+            }
+
+            cosnt anoncrypted = await this.anonCrypt(TRUST_ANCHOR_DID, message);
+
+            
+             * anoncrypt(message, trust_anchor_did)
+             * await superagent
+                .post(`${trust_anchor_endpoint}`)
+                .type('application/json')
+                .send({message:anoncrypted });
+             * 
+             * 
+             * 
+             */
             await db.put(this.config.id, did);
         } catch (err) {
-            // if (err.indyCode && err.indyCode === 203) {
-            return err;
-            // } else {
-            //     return next(err);
+            log.error(err);
         } finally {
             if (this.handle !== -1) await indy.closeWallet(this.handle);
         }
@@ -67,7 +89,7 @@ class AgencyWallet {
     }
 }
 
-const wallet = new AgencyWallet({ id: process.env.AGENCY_WALLET_NAME }, { key: process.env.SECRET });
+const wallet = new AgencyWallet({ id: process.env.CA_WALLET_NAME }, { key: process.env.SECRET });
 //    { genesis_txn: `${__dirname}/${process.env.GENESIS_TXN}` });
 
 module.exports = wallet;

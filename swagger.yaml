@@ -3,7 +3,7 @@ info:
   description: 'IdentityChain Agency REST API'
   title: IdentityChain Agency API
   version: '0.0.1'
-basePath: /agency/api
+basePath: /ca/api
 schemes:
   - http
 securityDefinitions:

@@ -3,13 +3,14 @@ const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
 const firebaseServer = require('../firebase/server');
 const db = require('../persistence/db');
+const http_secured = (process.env.SSL)? 'http://' : 'https://';
+const MESSAGES_PATH=`${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/messages/`;
 
 module.exports = {
     forward: wrap(async (req, res, next) => {
         const id = req.params.id;
         const test = req.query.test;
         const message = req.body.message;
-
         let encodedMessage;
         if (!test) {
             const did = await db.get(req.wallet.config.id);
@@ -20,9 +21,9 @@ module.exports = {
             encodedMessage = Buffer.from(JSON.stringify(message)).toString('base64');
         }
 
-        const targetDid = await db.get(id);
-        const senderDid = await db.get(targetDid);
-        const firebaseToken = await db.get(senderDid);
+        const senderDid = await db.get(id);
+        const obj = await db.get(senderDid);
+        const firebaseToken = obj.token;
 
         const n = encodedMessage.length;
         const byteSize = 4 * Math.ceil(n / 3);
@@ -37,9 +38,9 @@ module.exports = {
                     : ((dataType = 'url'),
                       (urlId = urlid.generate()),
                       db.put(urlId, encodedMessage),
-                      `http://${process.env.APP_HOST}:${process.env.APP_PORT}/agency/api/messages/${urlId}`);
+                      MESSAGES_PATH+urlId);
             await firebaseServer.sendMessageToClient(firebaseToken, {
-                senderDid: senderDid,
+                endpoint_did: senderDid,
                 type: dataType,
                 message: messageToSent
             });
@@ -49,15 +50,5 @@ module.exports = {
         } catch (e) {
             next(new APIResult(503, { status: 503, error: e.message, type: 'Service Unavailable' }));
         }
-    }),
-
-    retrieve: wrap(async (req, res, next) => {
-        console.log('GET request received');
-
-        const firebaseToken = await db.get(req.params.did);
-
-        next(new APIResult(200, { firebaseToken: firebaseToken }), {
-            status: 'Ok'
-        });
     })
 };
