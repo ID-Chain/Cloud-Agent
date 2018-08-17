@@ -291,3 +291,5 @@ node_modules
 config/runtime.yaml
 
 \.vscode/
+
+\.env
