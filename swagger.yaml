@@ -14,7 +14,7 @@ consumes:
 produces:
   - application/json
 definitions:
-  service_post:
+  services_post:
     type: object
     properties:
       senderDid:
@@ -55,11 +55,27 @@ paths:
       summary: Retrieve a message
       description: Retrieve a message
       responses:
-        '200':
-          description: ''
+        200:
+          description: 'Message found'
+        404: 
+          description: 'Message not found'
       tags:
         - messages
-  /services/:
+  /messages:
+    post: 
+      summary: Send FCM message to known client
+      description: Send a arbitrary message to known client using FCM. Firebase token should be known to sender
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/messages_post'
+      responses: 
+        202:
+          description: 'Accepted message and forwarded to client'
+      tags:
+        - messages
+  /services:
     post:
       summary: Send a service request
       description: Send a service request
@@ -67,7 +83,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/service_post'
+            $ref: '#/definitions/services_post'
       responses:
         '201':
           description: ''
@@ -80,14 +96,15 @@ paths:
       parameters:
         - in: path
           name: id
+          type: string
           required: true
-          description: A unique id usually provided by the mobile edge agent as the endpoint to this agency.
         - in: body
           name: message
           schema:
-            $ref: '#/definitions/inbox_post'
+            $ref: '#/definitions/indy_inbox_post'
+          description: A unique id usually provided by the mobile edge agent as the endpoint to this cloud agent.
       responses:
-        '200':
+        202:
           description: ''
       tags:
         - inbox

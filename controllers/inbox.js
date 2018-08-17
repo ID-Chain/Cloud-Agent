@@ -43,7 +43,7 @@ module.exports = {
                 type: dataType,
                 message: messageToSent
             });
-            next(new APIResult(200, { message: 'Successfully sent to client' }), {
+            next(new APIResult(202, { message: 'Accepted and forwarded to client' }), {
                 status: 'Ok'
             });
         } catch (e) {

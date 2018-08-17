@@ -1,8 +1,10 @@
 const indy = require('indy-sdk');
+const agent = require('superagent');
 const db = require('./persistence/db');
+
 const log = require('./util/log').log;
 
-class AgencyWallet {
+class CAWallet {
     constructor(config, credentials) {
         this.config = config;
         this.credentials = credentials;
@@ -15,7 +17,34 @@ class AgencyWallet {
             this.handle = await indy.openWallet(this.config, this.credentials);
             // const didJSON = data.seed ? { seed: data.seed } : {};
             const didJSON = {};
-            const [did] = await indy.createAndStoreMyDid(this.handle, didJSON);
+            const [did, verkey] = await indy.createAndStoreMyDid(this.handle, didJSON);
+            /**
+          * Onboarding of Cloud Agent DID/Verkey by friendly Trust Anchor
+          *   
+
+            let message = {
+                    id: 'unique_request_nonce_uuid',
+                    type: 'urn:sovrin:agent:message_type:sovrin.org/connection_request',
+                    message:{
+                    did: did,
+                    verkey: verkey,
+                    endpoint: 'https://example.com/ca/api/blabla',
+                    nonce: unique_request_nonce_uuid
+                }
+            }
+
+            const anoncrypted = await this.anonCrypt(TRUST_ANCHOR_DID, message);
+
+            
+            anoncrypt(message, trust_anchor_did)
+            await agent
+                .post(`${trust_anchor_endpoint}`)
+                .type('application/json')
+                .send({message:anoncrypted });
+             * 
+             * 
+             * 
+             */
             await db.put(this.config.id, did);
         } catch (err) {
             // if (err.indyCode && err.indyCode === 203) {
@@ -29,9 +58,9 @@ class AgencyWallet {
 
     async openWallet() {
         log.debug('wallet opening');
-            if (this.handle === -1) {
-                this.handle = await indy.openWallet(this.config, this.credentials);
-            }
+        if (this.handle === -1) {
+            this.handle = await indy.openWallet(this.config, this.credentials);
+        }
     }
 
     async closeWallet() {
@@ -57,19 +86,15 @@ class AgencyWallet {
         const cryptMessageBuf = Buffer.from(messageString, 'base64');
         const recipientVk = indy.keyForLocalDid(this.handle, recipientDid);
         return await indy.cryptoAnonDecrypt(this.handle, recipientVk, cryptMessageBuf);
-        //const connRes = JSON.parse(messageBuf.toString('utf-8'));
-        //return connRes;
     }
 
-    async anonCrypt(recipientDid, messageBuf){
-        const verKey = indy.keyForLocalDid(this.handle,recipientDid);
+    async anonCrypt(recipientDid, messageBuf) {
+        const verKey = indy.keyForLocalDid(this.handle, recipientDid);
         return await indy.cryptoAnonCrypt(anonCryptKey, messageBuf);
     }
 }
 
-const wallet = new AgencyWallet({ id: process.env.AGENCY_WALLET_NAME }, { key: process.env.SECRET });
-//    { genesis_txn: `${__dirname}/${process.env.GENESIS_TXN}` });
-
+const wallet = new CAWallet({ id: process.env.CA_WALLET_NAME }, { key: process.env.SECRET });
 module.exports = wallet;
 
 /**
@@ -101,4 +126,5 @@ schema.method('anonDecryptAndVerify', async function(recipientVk, messageString,
     const signValid = this.cryptoVerify(connRes.verkey, messageBuf, signBuf);
     if (!signValid) throw new APIResult(400, { message: 'signature mismatch' });
     return connRes;
-}); */
+}); 
+*/

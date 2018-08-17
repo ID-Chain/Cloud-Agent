@@ -1,4 +1,5 @@
 const wrap = require('../util/asyncwrap').wrap;
+const log = require('../util/log').log;
 const APIResult = require('../util/api-result');
 const firebaseServer = require('../firebase/server');
 
@@ -6,17 +7,15 @@ const db = require('../persistence/db');
 
 module.exports = {
     send: wrap(async (req, res, next) => {
-        const registrationToken = req.body.id;
-        const type = req.body.type;
-        const message = req.body.message;
-        await db.put(req.body.did, registrationToken);
-        const messageId = await firebaseServer.sendMessageToClient(registrationToken, message);
-        console.log('Sent Message to Client: %s', messageId);
-        // ToDo
-
-        next(new APIResult(200, { messageId: messageId }), {
-            status: 'Ok'
-        });
+        try {
+            await firebaseServer.sendMessageToClient(req.body.firebase_token, { message: req.body.message });
+            log.debug('Sent Message to Client:');
+            next(new APIResult(202, { message: 'Accepted and forwarded to client' }), {
+                status: 'Ok'
+            });
+        } catch (err) {
+            next(new APIResult(400, { message: err.message }, err));
+        }
     }),
 
     retrieve: wrap(async (req, res, next) => {
