@@ -47,10 +47,7 @@ class CAWallet {
              */
             await db.put(this.config.id, did);
         } catch (err) {
-            // if (err.indyCode && err.indyCode === 203) {
-            return err;
-            // } else {
-            //     return next(err);
+            log.error(err);
         } finally {
             if (this.handle !== -1) await indy.closeWallet(this.handle);
         }

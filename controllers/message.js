@@ -19,10 +19,10 @@ module.exports = {
     }),
 
     retrieve: wrap(async (req, res, next) => {
-        console.log('GET request received');
-        
-        const encodedCryptedMessage = await db.get(req.params.id);
-
+        const urlid = req.params.id;
+        const dba = db;
+        const encodedCryptedMessage = await db.get(urlid);
+        req.finalCallback = () => dba.del(urlid);
         next(new APIResult(200, { message: encodedCryptedMessage }), {
             status: 'Ok'
         });

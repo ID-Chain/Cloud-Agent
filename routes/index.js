@@ -35,7 +35,7 @@ router.route('/messages/:id').get(message.retrieve);
 
 router.route('/services').post(service.serve);
 
-router.route('/inbox/:id').post(inbox.forward);
+router.route('/indy/:id').post(inbox.forward);
 
 router.route('');
 
