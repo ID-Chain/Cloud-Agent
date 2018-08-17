@@ -28,7 +28,7 @@
     "pino": "^4.17.3",
     "superagent": "^3.8.3",
     "swagger-ui-express": "^3.0.9",
-    "uuid": "^3.2.1",
+    "uuid": "^3.3.2",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

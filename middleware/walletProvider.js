@@ -13,7 +13,7 @@ const wallet = require('../wallet');
  * and provides it through req.wallet for further
  * processing
  *
- * ToDo: Provide WalletStorage for Agency without Mongo
+ * ToDo: Provide WalletStorage for Cloud Agent without Mongo
  *
  * @param {Object} req request object
  * @param {String} walletId wallet name

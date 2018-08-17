@@ -1,5 +1,5 @@
 /**
- * IdentityChain Agency
+ * IdentityChain Cloud Agent
  * Main
  */
 require('dotenv').config();
@@ -20,15 +20,15 @@ const app = express();
 
 app.use(middleware.before);
 
-app.use('/agency/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use('/ca/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
-app.use('/agency/api/', routes);
+app.use('/ca/api/', routes);
 
 app.use(middleware.after);
 
 const server = app.listen(process.env.APP_PORT, process.env.APP_HOST, async () => {
-    log.info('IDChain Agency API now up at %s:%s', server.address().address, server.address().port);
-    // log.info('Access APIDocs at /agency/api/docs');
+    log.info('IDChain Cloud Agent API now up at %s:%s', server.address().address, server.address().port);
+    log.info('Access APIDocs at /ca/api/docs');
 
     try {
         await pool.createConfig();

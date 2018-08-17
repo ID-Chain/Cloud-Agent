@@ -1,11 +1,12 @@
 swagger: '2.0'
 info:
-  description: 'IdentityChain Agency REST API'
-  title: IdentityChain Agency API
-  version: '0.0.1'
+  description: 'IdentityChain Cloud Agent REST API'
+  title: IdentityChain Cloud Agent API
+  version: '0.0.2'
 basePath: /ca/api
 schemes:
   - http
+  - https
 securityDefinitions:
   basic:
     type: basic
@@ -17,34 +18,35 @@ definitions:
   services_post:
     type: object
     properties:
-      senderDid:
+      endpoint_did:
         type: string
-      senderVerKey:
+      verkey:
         type: string
-      type:
+      endpoint:
         type: string
-      data:
-        type: object
-        properties:
-            targetDid:
-              description: '(optional) Required if type=getUrl. Contains TargetDid for which the new URL inbox is requested' 
-              type: string 
-            token: 
-              description: '(optional) Required if type=register. Contains Firebase Token to be created or updated at Agency side'
-              type: string   
+        description: Contains Firebase Token to be created or updated at Cloud Agent side
     required:
-      - senderDid
-      - senderVerKey
-      - type
-      - data
-  inbox_post:
+      - endpoint_did
+      - verkey
+      - endpoint
+  messages_post:
+    type: object
+    properties:
+      firebase_token:
+        type: string
+      message:
+        type: string
+    required:
+      - firebase_token
+      - message    
+  indy_inbox_post:
     type: object
     properties:
       message:
         description: 'Anoncrypted Message from other Edge Agents to be forwarded to mobile client'
         type: string
 paths:
-  /messages/{id}/:
+  /messages/{id}:
     parameters:
       - description: A unique string value identifying this message. This request is usually sent to clients through FCM.
         in: path
@@ -88,8 +90,8 @@ paths:
         '201':
           description: ''
       tags:
-        - service
-  /inbox/{id}:
+        - services
+  /indy/{id}:
     post:
       summary: Send a message to a mobile client using the unique URL endpoint provided by mobile edge agent.
       description: Create a credential definition
@@ -98,6 +100,10 @@ paths:
           name: id
           type: string
           required: true
+        - in: query
+          name: test
+          type: string
+          description: Set to true if messages are for test purposes only. These messages will not be de/encrypted.
         - in: body
           name: message
           schema:
@@ -107,4 +113,4 @@ paths:
         202:
           description: ''
       tags:
-        - inbox
+        - indy-inbox

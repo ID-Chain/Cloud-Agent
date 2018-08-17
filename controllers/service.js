@@ -1,10 +1,11 @@
-const urlid = require('../util/urlid');
+const uuid = require('uuid/v4');
 const indy = require('indy-sdk');
 
 const wrap = require('../util/asyncwrap').wrap;
 const log = require('../util/log').log;
 const APIResult = require('../util/api-result');
 const db = require('../persistence/db');
+const pool = require('../pool');
 const http_secured = (process.env.SSL)? 'http://' : 'https://';
 const ENDPOINT_PATH=`${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/indy/`;
 
@@ -30,9 +31,7 @@ async function handleRequest(req){
     const senderDid = req.body.endpoint_did,
           senderKey = req.body.verkey,
           token = req.body.endpoint;
-
-          console.log(req.headers.origin)
-       
+    let myEndpointDid;
     try {
         await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
     } catch (err) {
@@ -43,18 +42,25 @@ async function handleRequest(req){
     try {
         // Token Update
         obj = await db.get(senderDid);
+        // const [address, verkey] = await indy.getEndpointForDid(req.wallet.handle, pool.handle, senderDid);
+        // const meta = await indy.getDidMetadata(req.wallet.handle, senderDid)
         obj.token = token;
         id = obj.urlid;
         await db.put(senderDid, obj);
     } catch(err){
         // First registration
-        id = urlid.generate();
+        id = uuid();
         obj = {urlid:id, token: token}
+        // await indy.setEndpointForDid(req.wallet.handle, senderDid, id, senderKey);
+        // await indy.setDidMetadata(req.wallet.handle, senderDid, JSON.stringify(obj));
         await db.put(senderDid, obj);
         await db.put(id, senderDid);
+    } finally{
+        log.error(err)
     }
    
-    const myEndpointDid = await db.get(req.wallet.config.id);
+     const myDids = await indy.listMyDidsWithMeta(req.wallet.handle);
+     myEndpointDid = await db.get(req.wallet.config.id);
 
     return {
         endpoint_did: myEndpointDid,

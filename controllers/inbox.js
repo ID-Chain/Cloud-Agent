@@ -1,4 +1,4 @@
-const urlid = require('../util/urlid');
+const uuid = require('uuid/v4');
 const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
 const firebaseServer = require('../firebase/server');
@@ -36,11 +36,11 @@ module.exports = {
                 byteSize < 4000
                     ? ((dataType = 'data'), encodedMessage)
                     : ((dataType = 'url'),
-                      (urlId = urlid.generate()),
+                      (urlId = uuid()),
                       db.put(urlId, encodedMessage),
                       MESSAGES_PATH+urlId);
             await firebaseServer.sendMessageToClient(firebaseToken, {
-                endpoint_did: senderDid,
+                did: senderDid,
                 type: dataType,
                 message: messageToSent
             });

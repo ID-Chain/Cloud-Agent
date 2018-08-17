@@ -1,5 +1,5 @@
 /**
- * IDChain Agency Logger
+ * IDChain Cloud Agent Logger
  */
 
 const log = require('pino')({ level: process.env.LOG_LEVEL });

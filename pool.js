@@ -1,5 +1,5 @@
 /**
- * IDChain Agent REST API
+ * IDChain Cloud Agent REST API
  * Pool Ledger Representation
  */
 
