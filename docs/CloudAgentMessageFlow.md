@@ -1,6 +1,6 @@
 # Cloud Agent Message Flow
 
-This documentation illustrates the steps required to use the Cloud Agent API with Mobile Edge Agents. 
+This document illustrates the message flow of the Cloud Agent and the corresponding actors. 
 
 ## Functionality 
 
