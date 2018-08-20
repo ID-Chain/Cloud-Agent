@@ -17,7 +17,7 @@ This documentation illustrates the steps required to use the Cloud Agent API wit
 
 4. The TA sends authcrypted payload messages regarding the APP to the provided CA endpoint anoncrypted with the key of the CA. The CA decrypts the anoncrypted message with it's private key and forwards the payload message anoncrypted to the APP through the provided Firebase Token with FCM. The APP can directly respond to the TA's endpoint with other authcrypted message.
 
-![SeqDiagram](CloudAgentSequenceDiagram.png  "Sequence Diagram Cloud Agent ")
+![SeqDiagram](CloudAgentSequenceDiagram.png  "Sequence Diagram Cloud Agent")
 
 Notes: 
  - It is assumed that the TA has been previously onboarded and has Trust Anchor priviledges to write on the ledger.
