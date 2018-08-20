@@ -22,7 +22,5 @@ This documentation illustrates the steps required to use the Cloud Agent API wit
 Notes: 
  - It is assumed that the TA has been previously onboarded and has Trust Anchor priviledges to write on the ledger.
  - FCM limits the message payload to 4KB. Messages with payloads >=4KB will be temporarily stored on the CA. The CA provides a unique URL to retrieve the message payload.
- - Follow the Swagger documentation for specific formats on exchanged messages and formats.
+ - Follow the Swagger documentation for specific formats on exchanged messages.
  
- 
- Monday, 20. August 2018 03:49pm 
