@@ -42,8 +42,6 @@ async function handleRequest(req){
     try {
         // Token Update
         obj = await db.get(senderDid);
-        // const [address, verkey] = await indy.getEndpointForDid(req.wallet.handle, pool.handle, senderDid);
-        // const meta = await indy.getDidMetadata(req.wallet.handle, senderDid)
         obj.token = token;
         id = obj.urlid;
         await db.put(senderDid, obj);
@@ -51,15 +49,12 @@ async function handleRequest(req){
         // First registration
         id = uuid();
         obj = {urlid:id, token: token}
-        // await indy.setEndpointForDid(req.wallet.handle, senderDid, id, senderKey);
-        // await indy.setDidMetadata(req.wallet.handle, senderDid, JSON.stringify(obj));
         await db.put(senderDid, obj);
         await db.put(id, senderDid);
     } finally{
         log.error(err)
     }
    
-     const myDids = await indy.listMyDidsWithMeta(req.wallet.handle);
      myEndpointDid = await db.get(req.wallet.config.id);
 
     return {
