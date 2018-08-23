@@ -51,9 +51,7 @@ async function handleRequest(req){
         obj = {urlid:id, token: token}
         await db.put(senderDid, obj);
         await db.put(id, senderDid);
-    } finally{
-        log.error(err)
-    }
+    } 
    
      myEndpointDid = await db.get(req.wallet.config.id);
 
