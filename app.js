@@ -11,8 +11,8 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDoc = YAML.load('./swagger.yaml');
 
 const log = require('./util/log').log;
-const pool = require('./pool');
-const wallet = require('./wallet');
+const pool = require('./lib/pool');
+const wallet = require('./lib/wallet');
 const middleware = require('./middleware');
 const routes = require('./routes');
 

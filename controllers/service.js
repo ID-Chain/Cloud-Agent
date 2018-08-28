@@ -5,7 +5,6 @@ const wrap = require('../util/asyncwrap').wrap;
 const log = require('../util/log').log;
 const APIResult = require('../util/api-result');
 const db = require('../persistence/db');
-const pool = require('../pool');
 const http_secured = (process.env.SSL)? 'http://' : 'https://';
 const ENDPOINT_PATH=`${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/indy/`;
 
@@ -53,7 +52,8 @@ async function handleRequest(req){
         await db.put(id, senderDid);
     } 
    
-     myEndpointDid = await db.get(req.wallet.config.id);
+     const  caEndpoint = await db.get(req.wallet.config.id);
+     myEndpointDid = caEndpoint.did;
 
     return {
         endpoint_did: myEndpointDid,

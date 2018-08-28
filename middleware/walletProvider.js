@@ -6,7 +6,7 @@
 const { wrap, wrapEx } = require('../util/asyncwrap');
 const log = require('../util/log').log;
 const NotFound = require('../util/error').NotFound;
-const wallet = require('../wallet');
+const wallet = require('../lib/wallet');
 
 /**
  * Finds and opens the wallet with walletId of user

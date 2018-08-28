@@ -294,3 +294,7 @@ config/runtime.yaml
 \.vscode/
 
 \.env
+
+docs/CloudAgentSequenceDiagram\.svg
+
+ca_endpoint\.json
