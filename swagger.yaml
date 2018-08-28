@@ -87,8 +87,12 @@ paths:
           schema:
             $ref: '#/definitions/services_post'
       responses:
-        '201':
-          description: ''
+        201:
+          description: 'Ok - Registration stored'
+        400:
+          description: 'Bad Request'
+        500: 
+          description: 'Server Error - Registration could not be stored'  
       tags:
         - services
   /indy/{id}:
@@ -100,17 +104,14 @@ paths:
           name: id
           type: string
           required: true
-        - in: query
-          name: test
-          type: string
-          description: Set to true if messages are for test purposes only. These messages will not be de/encrypted.
+          description: A unique id describing the endpoint usually provided by the mobile edge agent to this cloud agent.
         - in: body
           name: message
           schema:
             $ref: '#/definitions/indy_inbox_post'
-          description: A unique id usually provided by the mobile edge agent as the endpoint to this cloud agent.
+          description: Anoncrypted message to be sent to mobile edge agent. 
       responses:
         202:
-          description: ''
+          description: Accepted message and forwarded to client
       tags:
         - indy-inbox

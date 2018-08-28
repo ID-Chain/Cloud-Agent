@@ -21,7 +21,7 @@ module.exports = {
         } catch (e) {
             if (e.message === 'Bad Request')
                 next(new APIResult(400, { statusCode: 400, error: e.message, message: 'Service type unknown' }));
-            else next(new APIResult(next(400, { statusCode: 500, error: e.message, message: e.message })))
+            else next(new APIResult(next(500, { statusCode: 500, error: e.message, message: e.message })))
         }
     })
 };
