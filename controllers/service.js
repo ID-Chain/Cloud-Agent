@@ -2,11 +2,17 @@ const uuid = require('uuid/v4');
 const indy = require('indy-sdk');
 
 const wrap = require('../util/asyncwrap').wrap;
+const pool = require('../lib/pool');
 const log = require('../util/log').log;
 const APIResult = require('../util/api-result');
+
 const db = require('../persistence/db');
-const http_secured = (process.env.SSL)? 'http://' : 'https://';
-const ENDPOINT_PATH=`${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/indy/`;
+const pool_path = `${__dirname}/../${pool.config.genesis_txn}`
+const http_secured = process.env.SSL ? 'http://' : 'https://';
+const ENDPOINT_PATH = `${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/indy/`;
+const fs = require('fs');
+let pool_info = fs.readFileSync(pool_path, 'utf8');
+
 
 
 module.exports = {
@@ -21,15 +27,15 @@ module.exports = {
         } catch (e) {
             if (e.message === 'Bad Request')
                 next(new APIResult(400, { statusCode: 400, error: e.message, message: 'Service type unknown' }));
-            else next(new APIResult(next(500, { statusCode: 500, error: e.message, message: e.message })))
+            else next(new APIResult(next(500, { statusCode: 500, error: e.message, message: e.message })));
         }
     })
 };
 
-async function handleRequest(req){
+async function handleRequest(req) {
     const senderDid = req.body.endpoint_did,
-          senderKey = req.body.verkey,
-          token = req.body.endpoint;
+        senderKey = req.body.verkey,
+        token = req.body.endpoint;
     let myEndpointDid;
     try {
         await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
@@ -44,19 +50,20 @@ async function handleRequest(req){
         obj.token = token;
         id = obj.urlid;
         await db.put(senderDid, obj);
-    } catch(err){
+    } catch (err) {
         // First registration
         id = uuid();
-        obj = {urlid:id, token: token}
+        obj = { urlid: id, token: token };
         await db.put(senderDid, obj);
         await db.put(id, senderDid);
-    } 
-   
-     const  caEndpoint = await db.get(req.wallet.config.id);
-     myEndpointDid = caEndpoint.did;
+    }
 
+    const caEndpoint = await db.get(req.wallet.config.id);
+    myEndpointDid = caEndpoint.did;
+    
     return {
         endpoint_did: myEndpointDid,
-        endpoint: ENDPOINT_PATH+id
+        endpoint: ENDPOINT_PATH + id,
+        pool_config: { pool_name: pool.name, pool_transactions_genesis: pool_info }
     };
 }

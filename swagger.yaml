@@ -29,6 +29,25 @@ definitions:
       - endpoint_did
       - verkey
       - endpoint
+  services_response:
+      type: object
+      properties:
+        endpoint_did:
+          type: string
+          description: The endpoint did of this cloud agent
+        endpoint:
+          type: string
+          description: The endpoint url provided for this service request
+        pool_config:
+          type: object
+          description: Pool object containing information to which pool the cloud agent is connected to
+          properties:
+            pool_name: 
+              type: string
+              description: The name of the pool
+            pool_transactions_genesis: 
+              type: string
+              description: The pool transaction genesis file used by the cloud agent    
   messages_post:
     type: object
     properties:
@@ -45,6 +64,7 @@ definitions:
       message:
         description: 'Anoncrypted Message from other Edge Agents to be forwarded to mobile client'
         type: string
+  
 paths:
   /messages/{id}:
     parameters:
@@ -89,6 +109,11 @@ paths:
       responses:
         201:
           description: 'Ok - Registration stored'
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/services_response'
+              description: Successful response to services request  
         400:
           description: 'Bad Request'
         500: 
