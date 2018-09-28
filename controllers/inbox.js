@@ -15,8 +15,10 @@ module.exports = {
         const message = req.body.message;
         let encodedMessage;
 
+        const senderDid = await db.get(id);
         try {
             // If message was anoncrypted for cloud agent
+            log.debug(senderDid);
             const did = await db.get(req.wallet.config.id);
             const messageBuf = await lib.crypto.anonDecryptToBuffer(req.wallet.handle, did, message);
             const encryptedMessage = await lib.crypto.anonCryptFromBuffer(senderDid, messageBuf);
@@ -27,7 +29,6 @@ module.exports = {
             encodedMessage = message;
         }
 
-        const senderDid = await db.get(id);
         const obj = await db.get(senderDid);
         const firebaseToken = obj.token;
 
