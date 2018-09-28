@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "DEBUG=* nodemon --inspect -r pino-debug app.js | pino",
-    "test": "NODE_ENV=testing mocha --exit"
+    "test": "NODE_ENV=testing mocha "
   },
   "dependencies": {
     "ajv": "^6.5.1",

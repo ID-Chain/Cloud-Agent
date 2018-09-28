@@ -19,8 +19,8 @@ module.exports = {
         try {
             // If message was anoncrypted for cloud agent
             log.debug(senderDid);
-            const did = await db.get(req.wallet.config.id);
-            const messageBuf = await lib.crypto.anonDecryptToBuffer(req.wallet.handle, did, message);
+            const didObj = await db.get(req.wallet.config.id);
+            const messageBuf = await lib.crypto.anonDecryptToBuffer(req.wallet.handle, didObj.did, message);
             const encryptedMessage = await lib.crypto.anonCryptFromBuffer(senderDid, messageBuf);
             encodedMessage = Buffer.from(JSON.stringify(encryptedMessage)).toString('base64');
         } catch (err) {
