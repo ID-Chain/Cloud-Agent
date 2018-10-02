@@ -21,8 +21,8 @@ module.exports = {
             log.debug(senderDid);
             const didObj = await db.get(req.wallet.config.id);
             const messageBuf = await lib.crypto.anonDecryptToBuffer(req.wallet.handle, didObj.did, message);
-            const encryptedMessage = await lib.crypto.anonCryptFromBuffer(senderDid, messageBuf);
-            encodedMessage = Buffer.from(JSON.stringify(encryptedMessage)).toString('base64');
+            const encryptedMessage = await lib.crypto.anonCryptFromBuffer(req.wallet.handle, senderDid, messageBuf);
+            encodedMessage = encryptedMessage.toString('base64');
         } catch (err) {
             // Forward only, if anondecrypt did not work
             log.error(err);
@@ -56,7 +56,7 @@ module.exports = {
         }
     }),
 
-    receive: wrap(async (req, res, next) => {
+    receive: wrap(async (req, res, next) => { // WIP
         const handle = req.wallet.handle;
         const caEndpoint = await db.get(req.wallet.config.id);
         const myDid = caEndpoint.did;
