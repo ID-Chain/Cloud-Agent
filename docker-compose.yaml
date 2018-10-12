@@ -1,0 +1,53 @@
+version: '3'
+
+networks:
+  indy-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${CA_SUBNET-127.0.1.1/24}
+
+services:
+  pool:
+    image: idchain/testpool
+    ports:
+      - ${POOL_PORTS-9701-9708}:${POOL_PORTS-9701-9708}
+    environment:
+      - POOL_NAME
+      - POOL_IP
+      - PORTSTART
+    networks:
+      indy-network:
+        ipv4_address: ${POOL_IP}
+
+  ca:
+    build:
+      context: .
+    image: idchain/cloudagent
+    container_name: idchain-ca
+    environment:
+      - APP_HOST
+      - APP_PORT
+      - DOMAIN_HOST
+      - DOMAIN_PORT
+      - SSL
+      - DB_PATH
+      - CA_WALLET_NAME
+      - SECRET
+      - TRUST_ANCHOR_DID
+      - TRUST_ANCHOR_ENDPOINT
+      - TRUST_ANCHOR_VERKEY
+      - FIREBASE_ADMIN_PATH
+      - FIREBASE_PROJECT_URL
+      - POOL_NAME
+      - GENESIS_TXN
+      - LOG_LEVEL
+      - RUST_LOG
+    ports:
+      - ${DOMAIN_PORT}:${DOMAIN_PORT}
+    depends_on:
+      - pool
+    networks:
+      indy-network:
+        ipv4_address: ${DOMAIN_HOST}
