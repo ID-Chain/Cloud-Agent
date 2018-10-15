@@ -56,5 +56,6 @@ RUN npm install
 # Copy rest of the app
 COPY --chown=indy:indy . /home/indy/app/
 
+#RUN ["chmod", "+x", "/home/indy/app/docker-entrypoint.sh"]
 ENTRYPOINT ["/home/indy/app/docker-entrypoint.sh"]
 CMD [ "npm", "start" ]
