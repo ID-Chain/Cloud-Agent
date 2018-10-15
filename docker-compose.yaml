@@ -45,9 +45,9 @@ services:
       - LOG_LEVEL
       - RUST_LOG
     ports:
-      - ${DOMAIN_PORT}:${DOMAIN_PORT}
+      - ${APP_PORT}:${APP_PORT}
     depends_on:
       - pool
     networks:
       indy-network:
-        ipv4_address: ${DOMAIN_HOST}
+        ipv4_address: ${APP_HOST}
