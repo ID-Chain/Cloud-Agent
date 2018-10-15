@@ -298,3 +298,4 @@ config/runtime.yaml
 docs/CloudAgentSequenceDiagram\.svg
 
 ca_endpoint\.json
+eit-idchain-app-firebase-adminsdk.json
