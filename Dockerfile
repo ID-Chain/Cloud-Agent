@@ -44,17 +44,17 @@ RUN apt-get update && apt-get install -y libindy nodejs
 
 # Install Firebase
 RUN npm install firebase-admin --save
+COPY --chown=indy:indy eit-idchain-app-firebase-adminsdk.json /home/indy/app/
 
 USER indy
-RUN mkdir /home/indy/app
+#RUN mkdir /home/indy/app
 WORKDIR /home/indy/app
 
 # install app dependencies
-COPY --chown=indy:indy package.json package-lock.json /home/indy/app/
+COPY --chown=indy:indy .env package.json package-lock.json /home/indy/app/
 RUN npm install
 
 # Copy rest of the app
 COPY --chown=indy:indy . /home/indy/app/
 
-ENTRYPOINT ["/home/indy/app/docker-entrypoint.sh"]
 CMD [ "npm", "start" ]

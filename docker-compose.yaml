@@ -1,12 +1,12 @@
 version: '3'
 
-networks:
-  indy-network:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: ${CA_SUBNET-127.0.1.1/24}
+#networks:
+#  indy-network:
+#    driver: bridge
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: ${CA_SUBNET}
 
 services:
   pool:
@@ -17,9 +17,9 @@ services:
       - POOL_NAME
       - POOL_IP
       - PORTSTART
-    networks:
-      indy-network:
-        ipv4_address: ${POOL_IP}
+#    networks:
+#      indy-network:
+#        ipv4_address: ${POOL_IP}
 
   ca:
     build:
@@ -45,9 +45,9 @@ services:
       - LOG_LEVEL
       - RUST_LOG
     ports:
-      - ${DOMAIN_PORT}:${DOMAIN_PORT}
+      - ${APP_PORT}:${APP_PORT}
     depends_on:
       - pool
-    networks:
-      indy-network:
-        ipv4_address: ${DOMAIN_HOST}
+#    networks:
+#     indy-network:
+#        ipv4_address: ${APP_HOST}
