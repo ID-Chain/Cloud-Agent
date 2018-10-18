@@ -26,7 +26,7 @@ app.use('/ca/api/', routes);
 
 app.use(middleware.after);
 
-const server = app.listen(process.env.APP_PORT, process.env.APP_HOST, async () => {
+const server = app.listen(process.env.CA_APP_PORT, process.env.CA_APP_HOST, async () => {
     log.info('IDChain Cloud Agent API now up at %s:%s', server.address().address, server.address().port);
     log.info('Access APIDocs at /ca/api/docs');
 

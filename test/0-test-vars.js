@@ -6,7 +6,7 @@
 require('dotenv').config();
 const request = require('supertest');
 
-module.exports.serverURL = `http://${process.env.APP_HOST}:${process.env.APP_PORT}`;
+module.exports.serverURL = `http://${process.env.CA_APP_HOST}:${process.env.CA_APP_PORT}`;
 module.exports.agent = request.agent(module.exports.serverURL);
 
 module.exports.acceptHeader = { Accept: 'application/json' };
