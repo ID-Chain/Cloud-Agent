@@ -51,7 +51,7 @@ USER indy
 WORKDIR /home/indy/app
 
 # install app dependencies
-COPY --chown=indy:indy .env package.json package-lock.json /home/indy/app/
+COPY --chown=indy:indy package.json package-lock.json /home/indy/app/
 RUN npm install
 
 # Copy rest of the app
