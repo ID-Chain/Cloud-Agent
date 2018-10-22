@@ -24,7 +24,8 @@ RUN apt-get update -y && apt-get install -y \
     python3.5 \
     python3-pip \
     python-setuptools \
-    python3-nacl
+    python3-nacl \
+    nano
 
 # Add indy user
 RUN useradd -ms /bin/bash -u $uid indy
