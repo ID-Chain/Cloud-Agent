@@ -43,12 +43,8 @@ RUN echo "Pin-Priority: 1000" >> /etc/apt/preferences
 # Install nodejs and libindy
 RUN apt-get update && apt-get install -y libindy nodejs
 
-# Install Firebase
-RUN npm install firebase-admin --save
-COPY --chown=indy:indy eit-idchain-app-firebase-adminsdk.json /home/indy/app/
-
 USER indy
-#RUN mkdir /home/indy/app
+RUN mkdir -p /home/indy/app
 WORKDIR /home/indy/app
 
 # install app dependencies

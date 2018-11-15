@@ -5,7 +5,6 @@
 require('dotenv').config();
 const express = require('express');
 const YAML = require('yamljs');
-//var firebase_admin = require('./firebase/server');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDoc = YAML.load('./swagger.yaml');
