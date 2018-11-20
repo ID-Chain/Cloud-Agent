@@ -20,11 +20,7 @@ router.route('/messages/:id').get(message.retrieve);
 
 router.route('/services').post(service.serve);
 
-router.route('/indy').post(inbox.receive);
-
 router.route('/indy/:id').post(inbox.forward);
-
-router.route('');
 
 router.use(walletProvider.after);
 

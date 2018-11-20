@@ -2,6 +2,7 @@ const fs = require('fs');
 const uuid = require('uuid/v4');
 const indy = require('indy-sdk');
 
+const pool = require('../lib/pool');
 const db = require('../persistence/db');
 const lib = require('../lib');
 const log = require('../util/log').log;
