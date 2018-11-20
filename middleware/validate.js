@@ -5,13 +5,13 @@
 'use strict';
 
 const YAML = require('yamljs');
-const ajv = require('ajv')({removeAdditional: true});
+const ajv = require('ajv')({ removeAdditional: true });
 const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
 const swaggerDoc = YAML.load('./swagger.yaml');
 
 ajv.addSchema(swaggerDoc, 'swagger.json');
-const rx= /^\/api\/(\w+)/;
+const rx = /^\/api\/(\w+)/;
 
 /**
  * Validation Middleware

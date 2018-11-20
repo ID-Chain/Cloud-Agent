@@ -1,33 +1,30 @@
+const fs = require('fs');
 const uuid = require('uuid/v4');
 const indy = require('indy-sdk');
 
-const wrap = require('../util/asyncwrap').wrap;
 const pool = require('../lib/pool');
+const db = require('../persistence/db');
+const lib = require('../lib');
 const log = require('../util/log').log;
+const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
 
-const db = require('../persistence/db');
 const pool_path = `${__dirname}/../${pool.config.genesis_txn}`
+const pool_info = fs.readFileSync(pool_path, 'utf8');
 const http_secured = process.env.SSL ? 'http://' : 'https://';
 const ENDPOINT_PATH = `${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/indy/`;
-const fs = require('fs');
-let pool_info = fs.readFileSync(pool_path, 'utf8');
-
-
 
 module.exports = {
     serve: wrap(async (req, res, next) => {
-        let response = {};
-
         try {
-            response = await handleRequest(req);
-            next(new APIResult(201, response), {
-                status: 'Ok'
-            });
+            const response = await handleRequest(req);
+            next(APIResult.created(response));
         } catch (e) {
-            if (e.message === 'Bad Request')
-                next(new APIResult(400, { statusCode: 400, error: e.message, message: 'Service type unknown' }));
-            else next(new APIResult(next(500, { statusCode: 500, error: e.message, message: e.message })));
+            if (e.message === 'Bad Request') {
+                next(new APIResult(400, { message: 'Service type unknown' }, e));
+            } else {
+                next(new APIResult(500, { message: e.message }, e));
+            }
         }
     })
 };
@@ -38,7 +35,7 @@ async function handleRequest(req) {
         token = req.body.endpoint;
     let myEndpointDid;
     try {
-        await indy.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
+        await lib.sdk.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });
     } catch (err) {
         log.error(err);
     }
@@ -48,6 +45,7 @@ async function handleRequest(req) {
         // Token Update
         obj = await db.get(senderDid);
         obj.token = token;
+        obj.verkey = senderKey;
         id = obj.urlid;
         await db.put(senderDid, obj);
     } catch (err) {

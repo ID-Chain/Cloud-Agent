@@ -4,38 +4,15 @@
  */
 
 const { wrap, wrapEx } = require('../util/asyncwrap');
-const log = require('../util/log').log;
-const NotFound = require('../util/error').NotFound;
+const APIResult = require('../util/api-result');
 const wallet = require('../lib/wallet');
-
-/**
- * Finds and opens the wallet with walletId of user
- * and provides it through req.wallet for further
- * processing
- *
- * ToDo: Provide WalletStorage for Cloud Agent without Mongo
- *
- * @param {Object} req request object
- * @param {String} walletId wallet name
- * @return {Object} the wallet object
- */
-async function provideWallet(req) {
-    if (!wallet) throw new NotFound('Wallet not found');
-    await wallet.openWallet();
-    req.wallet = wallet;
-    return wallet;
-}
+const log = require('../util/log').log;
 
 module.exports = {
     before: wrap(async (req, res, next) => {
         log.debug('walletProvider before');
-        await provideWallet(req);
-        next();
-    }),
-
-    param: wrapEx(async (req, res, next, walletId) => {
-        log.debug('walletProvider param');
-        await provideWallet(req);
+        await wallet.openWallet();
+        req.wallet = wallet;
         next();
     }),
 
@@ -46,7 +23,7 @@ module.exports = {
             next();
         }),
         wrapEx(async (result, req, res, next) => {
-            log.debug('walletProvider after result-handler');
+            log.debug('walletProvider after with result handler');
             if (req.wallet) await req.wallet.closeWallet();
             next(result);
         })

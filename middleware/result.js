@@ -4,10 +4,9 @@
  */
 
 const log = require('../util/log').log;
-const db = require('../persistence/db');
-
 
 const internalServerError = 500;
+const notFound = 404;
 const badRequest = 400;
 const indyCodes = {
   // Caller passed invalid value as param 1 (null, invalid json and etc..)
@@ -93,7 +92,7 @@ const indyCodes = {
   211: internalServerError,
 
   // Requested wallet item not found
-  212: badRequest,
+  212: notFound,
 
   // Returned if wallet's add_record operation is used with record name that already exists
   213: badRequest,
@@ -183,7 +182,3 @@ module.exports = {
     return res.status(err.status || 500).json({message: err.message});
   },
 };
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
