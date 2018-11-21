@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "dependencies": {
+    "redoc": "^2.0.0-alpha.41",
+    "redoc-cli": "^0.7.0"
+  }
+}
