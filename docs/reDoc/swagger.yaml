@@ -1,0 +1,142 @@
+swagger: '2.0'
+info:
+  description: 'IdentityChain Cloud Agent REST API'
+  title: IdentityChain Cloud Agent API
+  version: '0.0.2'
+basePath: /ca/api
+schemes:
+  - http
+  - https
+securityDefinitions:
+  basic:
+    type: basic
+consumes:
+  - application/json
+produces:
+  - application/json
+definitions:
+  services_post:
+    type: object
+    properties:
+      endpoint_did:
+        type: string
+      verkey:
+        type: string
+      endpoint:
+        type: string
+        description: Contains Firebase Token to be created or updated at Cloud Agent side
+    required:
+      - endpoint_did
+      - verkey
+      - endpoint
+  services_response:
+      type: object
+      properties:
+        endpoint_did:
+          type: string
+          description: The endpoint did of this cloud agent
+        endpoint:
+          type: string
+          description: The endpoint url provided for this service request
+        pool_config:
+          type: object
+          description: Pool object containing information to which pool the cloud agent is connected to
+          properties:
+            pool_name: 
+              type: string
+              description: The name of the pool
+            pool_transactions_genesis: 
+              type: string
+              description: The pool transaction genesis file used by the cloud agent    
+  messages_post:
+    type: object
+    properties:
+      firebase_token:
+        type: string
+      message:
+        type: string
+    required:
+      - firebase_token
+      - message    
+  indy_inbox_post:
+    type: object
+    properties:
+      message:
+        description: 'Anoncrypted Message from other Edge Agents to be forwarded to mobile client'
+        type: string
+  
+paths:
+  /messages/{id}:
+    parameters:
+      - description: A unique string value identifying this message. This request is usually sent to clients through FCM.
+        in: path
+        name: id
+        required: true
+        type: string
+    get:
+      summary: Retrieve a message
+      description: Retrieve a message
+      responses:
+        200:
+          description: 'Message found'
+        404: 
+          description: 'Message not found'
+      tags:
+        - messages
+  /messages:
+    post: 
+      summary: Send FCM message to known client
+      description: Send a arbitrary message to known client using FCM. Firebase token should be known to sender
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/messages_post'
+      responses: 
+        202:
+          description: 'Accepted message and forwarded to client'
+      tags:
+        - messages
+  /services:
+    post:
+      summary: Send a service request
+      description: Send a service request
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/services_post'
+      responses:
+        201:
+          description: 'Ok - Registration stored'
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/services_response'
+              description: Successful response to services request  
+        400:
+          description: 'Bad Request'
+        500: 
+          description: 'Server Error - Registration could not be stored'  
+      tags:
+        - services
+  /indy/{id}:
+    post:
+      summary: Send a message to a mobile client using the unique URL endpoint provided by mobile edge agent.
+      description: Create a credential definition
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: A unique id describing the endpoint usually provided by the mobile edge agent to this cloud agent.
+        - in: body
+          name: message
+          schema:
+            $ref: '#/definitions/indy_inbox_post'
+          description: Anoncrypted message to be sent to mobile edge agent. 
+      responses:
+        202:
+          description: Accepted message and forwarded to client
+      tags:
+        - indy-inbox
