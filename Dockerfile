@@ -3,6 +3,7 @@ FROM ubuntu:16.04
 ARG uid=1000
 ARG indy_stream=stable
 
+ENV DB_PATH=${DB_PATH:-/home/indy/app/data/db}
 ENV LC_ALL="C.UTF-8"
 ENV LANG="C.UTF-8"
 ENV SHELL="/bin/bash"
@@ -44,8 +45,9 @@ RUN echo "Pin-Priority: 1000" >> /etc/apt/preferences
 RUN apt-get update && apt-get install -y libindy nodejs
 
 USER indy
-RUN mkdir -p /home/indy/app
+RUN mkdir -p /home/indy/app/data/db
 WORKDIR /home/indy/app
+VOLUME ["$DB_PATH"]
 
 # install app dependencies
 COPY --chown=indy:indy package.json package-lock.json /home/indy/app/
@@ -54,4 +56,5 @@ RUN npm install
 # Copy rest of the app
 COPY --chown=indy:indy . /home/indy/app/
 
+ENTRYPOINT ["/home/indy/app/docker-entrypoint.sh"]
 CMD [ "npm", "start" ]

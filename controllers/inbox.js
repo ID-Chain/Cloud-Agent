@@ -20,9 +20,9 @@ module.exports = {
         try {
             // If message was anoncrypted for cloud agent
             log.debug(senderDid);
-            const { caDid, caVerkey } = await db.get(req.wallet.config.id);
+            const { did, verkey } = await db.get(req.wallet.config.id);
             const recipientVk = await lib.sdk.keyForLocalDid(req.wallet.handle, senderDid);
-            const decryptedMessage = await lib.crypto.anonDecrypt(req.wallet.handle, caVerkey, message);
+            const decryptedMessage = await lib.crypto.anonDecrypt(req.wallet.handle, verkey, message);
             encodedMessage = await lib.crypto.anonCrypt(recipientVk, decryptedMessage);
         } catch (err) {
             // Forward only, if anondecrypt did not work

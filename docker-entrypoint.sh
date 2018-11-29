@@ -1,5 +1,3 @@
-# Copied form api 04.10.18
-
 #!/bin/bash
 set -e
 
