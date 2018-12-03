@@ -34,7 +34,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
-    "nodemon": "^1.17.5",
+    "nodemon": "^1.18.7",
     "pino-debug": "^1.1.1",
     "supertest": "^3.1.0"
   }
