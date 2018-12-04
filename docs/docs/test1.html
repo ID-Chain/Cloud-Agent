@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>01_Introduction</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="introduction">Introduction</h1>
+<p>Within Hyperledger Indy/Sovrin there is the notion of an agent or an agency respectively. The different terms are described below. In our current implementation and the IdentityChain project we use the term cloud agent as an intermediary between the ledger and the mobile app. The cloud agent fulfills the purpose of forwarding messages if the app is not online or reachable.</p>
+<h1 id="motivation">Motivation</h1>
+<p>Within the IdentityChain (IDC) project the IndySDK is used on the IdentityChain API layer and the Android app layer. The API abstracts the IndySDK functionality to ease the use for developers. The Android app which is written in Java is using the IndySDK Java wrapper for exchanging values and methods with the ledger. The motivation for the introduction of a cloud agent within IdentityChain was the fact that credentials will be send, updated and revoked from the issuer’s interface, in our case a web application using the IdentityChain-API. In a scenario where the app is not online and/or connected with the ledger, the IdentityChain Cloud Agent (IDC-CA) is handling temporal storing and forwarding of messages, i.e., verifiable credentials, using the Google Firebase services and APIs. The IDC-CA is also used to initiate a setup of values for the IDC Mobile App. The IDC-CA can be seen as a unique endpoint for the mobile app. In future there will be additional functionalities and use cases extending the IDC-CA. This is also inline with the notion of agents within Hyperledger Indy itself, e.g., surrogate functions, such as automated replies to certain proof requests.</p>
+<h1 id="the-different-notions-of-agents">The different notions of Agents</h1>
+<p>In the following sub-sections the notion of the IDC agents is described. It may differ from the Hyperledger Indy/Sovrin meaning, which ca be found under:</p>
+<p>https://github.com/hyperledger/indy-agent/tree/master/docs</p>
+<h2 id="edge-agent">Edge Agent</h2>
+<p>An Edge Agent is positioned close to the user interface. If the hardware and network of the edge device is capable enough, i.e., a PC or laptop, the edge agent can talk to the ledger directly and is also hosting a wallet which includes all keys and credentials. This can also be a more potent machine, i.e., a server in an institution, such as a bank, which provides functionalities for user interfaces, such as web-based once. This edge agent is then called institutional edge agent. Otherwise, there are mobile edge agents for devices which are not always online and need additional functionalities to connect to other agents. In our case this is a mobile app, which is the interface for the identity holder and is connected to a cloud agent.</p>
+<h3 id="mobile-edge-agent">Mobile Edge Agent</h3>
+<p>As described above, a mobile edge agent is a user interface device, such as a smartphone which is not always online and is connected to a cloud agent which serves it as a message broker, etc. In our case the IDChain mobile Android app is an mobile edge agent.</p>
+<h2 id="institutional-edge-agent">Institutional Edge Agent</h2>
+<p>An institutional edge agent is capable of communicating with other edge and cloud agents and serves as the interface for the employees of the institution. In our case the institutional edge agent is the IndySDK together with the REST-API serving the front-end Admin PortalUI.</p>
+<h2 id="cloud-agent">Cloud Agent</h2>
+<p>A cloud agent is serving devices which have less capabilities such as smartphone apps. It redirects messages without knowing their contents to the specific edge agent. In our case we use key-value stores to be able to forward the incoming messages to the correct mobile using Firebase service from Google. The cloud agent can either run at an agency (service), see below or on the controlled hardware of the identity holder, such as a home NAS, Router, or similar.n It is to be noted that a cloud agent serving one app should have different endpoints for the different pairwise connections as it ensures more privacy for the identity holder. As of now, we neglect this in the IDChain project implementation, as the current version of the Indy ledger does not support complex endpoints to be stored on the ledger, at the moment only IP and Port can be stored. Agency</p>
+<p>An agency in our understanding is the hoster of cloud agents for identity holders, this can be a telephone operator, an IT service provider, bank or another trusted entity.</p>
+<h2 id="hub-text-from-github-indy-agent">Hub (text from github indy-agent)</h2>
+<p>Additionally there is the notion of a hub in Indy/Sovrin</p>
+<p>A Hub is much like a Cloud Agent, but rather than focusing only on messaging (transport) as defined above for a Cloud Agent, the Hub also stores and shares data (potentially including Verifiable Credentials), on behalf of its owner. All of the data held by the Hub is en/decrypted by the Edge Agent, so it is the data that moves between the Edge and Hub, and not keys. The Hub storage can (kind of) be thought of as a remote version of a Wallet without the keys, but is intended to hold more than just the Verifiable Credentials of an Edge Agent wallet. The idea is that the user can push lots of, for example, app-related data to the Hub, and a Service would be granted permission by the Owner to directly access the data without having to go to the Edge Agent. For example, a Hub-centric music service would store the owner’s config information and playlists on the Hub, and the Service would fetch the data from the Hub on use instead of storing it on it’s own servers. # Overview The following figure illustrates the overall IDC components also linked to the IndySDK and the ledger. At the top there are the three user interfaces for the issuer, the verifier, and an IDC-AdminUI. They are all accessing the IDC-API, which abstracts the IndySDK for the components. The IDC-Schema-Compiler which can be accessed via the IDC-AdminUI is also integrated in the API. The IDC-CA is an intermediary between the IDC-Mobile-App and the IDC-UIs and API. The IDC-Mobile-App is additionally using the IndySDK Java wrapper to access the ledger directly.</p>
+<figure>
+<img src="./IDChainSoftwareComponents.png" alt="IDC components" /><figcaption>IDC components</figcaption>
+</figure>
+<h2 id="software-components">Software Components</h2>
+<figure>
+<img src="./Agency_Agents_IDChain.png" alt="Agent Role Actors" /><figcaption>Agent Role Actors</figcaption>
+</figure>
+<h1 id="cloud-agent-message-flow">Cloud Agent Message Flow</h1>
+<p>This section illustrates the message flow of the Cloud Agent and the corresponding actors.</p>
+<h2 id="functionality">Functionality</h2>
+<ul>
+<li>Provides unique endpoints to be used within Hyperledger Indy for mobile clients</li>
+<li>Uses Firebase Cloud Messaging (FCM) to communicate with mobile devices supporting FCM</li>
+</ul>
+<h2 id="sequence-flow">Sequence Flow</h2>
+<ol type="1">
+<li><p>The IDC-CA requires an initial onboarding from a Trust Anchor (TA) in order to be known on the Ledger. Therefore it sends a connection request to the TA, which should be acknowledged by a connection response. The TA will onboard the CA with a NYM-request to the ledger.</p></li>
+<li><p>The IDC-Mobile-App sends a connection request to a known CA containing the did, verification key and the endpoint in form of a Firebase Token. The CA replies a connection response containing the CA’s DID and endpoint which can be used by the APP for further communication.</p></li>
+<li><p>The APP follows the pairwise connection pattern with responding to TAs connections offers with a connection request and provides the CA’s did and endpoint to be reached by the TA alongside its own did and verification key.</p></li>
+<li><p>The TA sends authcrypted payload messages regarding the APP to the provided IDC-CA endpoint anoncrypted with the key of the CA. The CA decrypts the anoncrypted message with it’s private key and forwards the payload message anoncrypted to the APP through the provided Firebase Token with FCM. The APP can directly respond to the TA’s endpoint with other authcrypted message.</p></li>
+</ol>
+<figure>
+<img src="./idc_cloud_agent_message_flow.png" alt="CA Message Flow" /><figcaption>CA Message Flow</figcaption>
+</figure>
+<p>Notes: - It is assumed that the TA has been previously onboarded and has Trust Anchor privileges to write on the ledger. - FCM limits the message payload to 4KB. Messages with payloads &gt;=4KB will be temporarily stored on the CA. The CA provides a unique URL to retrieve the message payload. - Follow the Swagger documentation for specific formats on exchanged messages.</p>
+<h2 id="cloud-agent-message-stack">Cloud Agent Message Stack</h2>
+<figure>
+<img src="./CloudAgentMessageStack.png" alt="IDC-CA Message Stack" /><figcaption>IDC-CA Message Stack</figcaption>
+</figure>
+<h2 id="working-together-with-other-idc-components">Working together with other IDC components</h2>
+<h2 id="difference-between-sovrin-ca-and-idc-ca">Difference between Sovrin CA and IDC CA</h2>
+<h1 id="setup">Setup</h1>
+<h2 id="deployment-of-the-cloud-agentagency-api">Deployment of the Cloud Agent/Agency* API</h2>
+<p>The deployment of the cloud agent/agency is described in the following.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>For a brief overview on which parameters are required for a working deployment, check the example.env in the repository.</p>
+<h3 id="firebase-cloud-messaging">Firebase Cloud Messaging</h3>
+<p>The implementation of the IDChain Cloud Agent implements Firebase Cloud Messaging (FCM) for communication with mobile applications. A prior registration of a project at http://console.firebase.google.com is required to use FCM. Set the following env-variables accordingly. The file we currently used was uploaded to the servers. Current name: ‘eit-idchain-app-firebase-adminsdk.json’. It was generated with Bersant Google account and used for the time being.</p>
+<p><code>FIREBASE_ADMIN_PATH='/path/to/xxx-adminsdk.json'</code></p>
+<p><code>FIREBASE_PROJECT_URL='https://xxx.firebaseio.com'</code></p>
+<h3 id="leveldb">LevelDB</h3>
+<p>The Cloud Agent uses LevelDB for storing data and keeping track of the connections between unique URLs provided to App instances and FCM Tokens. Make sure the application has write access to the path set as described below.</p>
+<p><code>DB_PATH='./data'</code></p>
+<h3 id="hyperledger-indy-pool-access">Hyperledger Indy Pool Access</h3>
+<p>The Cloud Agent requires access to a Hyperledger Indy ledger pool in order to verify DIDs and Endpoints. For this connection a name and the pool transactions genesis of the pool is required.</p>
+<p><code>POOL_IP=172.16.0.100</code></p>
+<p><code>POOL_NAME=poolApi</code></p>
+<p><code>GENESIS_TXN=pool_transactions_genesis.docker-compose</code></p>
+<h2 id="deployment-parameters">Deployment Parameters</h2>
+<p>The application runs on the host and port defined in the environment variables.</p>
+<p><code>CA_APP_HOST=127.0.1.1</code></p>
+<p><code>CA_APP_PORT=8080</code></p>
+<p>In addition for providing unique URLs to mobile apps, the application requires additional settings for the domain and port where the Cloud Agent is actively run at.</p>
+<p><code>DOMAIN_HOST=127.0.1.1</code></p>
+<p><code>DOMAIN_PORT=8080</code></p>
+<p>Finally, the Cloud Agent implements a Hyperledger Indy Wallet which is used for storing own and foreign DID information, encrypting and decrypting outgoing and incoming messages. Therefore the following env-variables need to be set.</p>
+<p><code>CA_WALLET_NAME='example_ca_wallet_name'</code></p>
+<p><code>SECRET='your-secret'</code></p>
+<p><code>CA_DID='Cloud Agent DID for initial onboarding'</code></p>
+<h2 id="deploy-the-app">Deploy the App</h2>
+<p>It is recommended to deploy the Cloud Agent API behind an Nginx webserver and let Nginx act as a proxy for incoming queries to the API. Also, in order to restart and reboot easily and accessing monitoring of the API we recommend the deployment with pm2.</p>
+<h3 id="pm2">PM2</h3>
+<p>Here are some helpful commands with pm2.</p>
+<h4 id="generating-server-specific-startup-scripts">Generating Server-specific Startup Scripts</h4>
+<p>Generating server-specific startup scripts for reboot ready startup. This command will check the underlying server environment and will propose the fitting script to be executed.</p>
+<p><code>pm2 startup</code></p>
+<p><code>pm2 startup ubuntu</code></p>
+<h4 id="startrestart-an-application-with-pm2">Start/Restart an application with pm2</h4>
+<p><code>pm2 start app.js -n your_app_name</code></p>
+<p><code>pm2 restart your_app_name</code></p>
+<h4 id="list-all-applications">List all applications</h4>
+<p><code>pm2 list</code></p>
+<h4 id="monitor-all-applications">Monitor all applications</h4>
+<p><code>pm2 monit</code></p>
+<h4 id="show-application-specific-information">Show application-specific information</h4>
+<p><code>pm2 show your_app_name</code></p>
+<h4 id="show-application-specific-logs">Show application-specific logs</h4>
+<p><code>pm2 logs your_app_name</code></p>
+<h2 id="docker">Docker</h2>
+<p>Dockerfiles added</p>
+<p>Deployment with docker-compose thru IDChain commons, uses local Dockerfile</p>
+<p>In IDChain commons there is a overall en file for settings, also including all other IDChain components</p>
+<p>Updated: October 26th, 2018</p>
+<p>Note: *Cloud Agent/Agency are currently terms used interchangeably. There seems no clear and valid written description on roles and components in Hyperledger Indy yet (as of 09/03/2018).</p>
+<pre><code>How is the CA setup and configured
+    Working together with ledger
+    How does the ledger need to be configured
+Setup of IDC App
+    IDC Test App integration
+Test - how to test a certain CA setup</code></pre>
+<h1 id="api">API</h1>
+<pre><code>What does the CA API calls do
+How can a developer use the API</code></pre>
+<h1 id="encryption">Encryption</h1>
+<pre><code>What kind of encryption is used between the different components
+Authcrypted
+Encrypted</code></pre>
+<h1 id="developer">Developer</h1>
+<pre><code>What does a dev need to know about the CA
+How can the functionality be extended</code></pre>
+<h1 id="example">Example</h1>
+<pre><code>Example Setup</code></pre>
+<h1 id="open-issues">Open Issues</h1>
+<pre><code>What needs to be done
+Roadshow - Next implementation steps</code></pre>
+<h1 id="license">License</h1>
+<pre><code>What is the open source license of the CA</code></pre>
+<h1 id="contact">Contact</h1>
+<pre><code>Contact the developers</code></pre>
+</body>
+</html>
