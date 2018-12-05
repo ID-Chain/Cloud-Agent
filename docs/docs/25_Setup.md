@@ -1,5 +1,43 @@
 # Setup
 
+# IdentityChain Commons
+
+This repository holds commonly used components, configurations, and tools for the IdentityChain project.
+
+# Guidelines
+Add new stuff by either
+
+- creating a directory for it or
+- create a new branch normally
+- create a new branch with no ancestors from tag empty:
+```
+git checkout --orphan deployment/aws empty
+```
+
+Update the readme, add your changes, submodules, git subtrees, commit, and push the new branch to origin as usual.
+
+# Building, starting and stopping services 
+
+## Building IDC_CA service
+
+Building of the services requires all environment variables used in containers and denoted in composition file to be set in one central .env file, see *Environment variables used in API project* section. Note that building services with environment variables not set may look succeeded, however applications in the containers will likely fail.
+
+To build services use the command:
+
+`./build.sh`
+
+ 
+## Staring services
+ 
+To start services using default docker-compose.yaml:
+
+`./up.sh`
+
+To start services using another compose script, e.g. *special.yaml*
+
+`./up.sh special`
+
+
 ## Deployment of the Cloud Agent/Agency* API
 
 The deployment of the cloud agent/agency is described in the following.
@@ -51,7 +89,6 @@ Finally, the Cloud Agent implements a Hyperledger Indy Wallet which is used for 
 
 `CA_DID='Cloud Agent DID for initial onboarding'`
 
-
 ## Deploy the App
 
 It is recommended to deploy the Cloud Agent API behind an Nginx webserver and let Nginx act as a proxy for incoming queries to the API. Also, in order to restart and reboot easily and accessing monitoring of the API we recommend the deployment with pm2.
@@ -97,8 +134,6 @@ Dockerfiles added
 Deployment with docker-compose thru IDChain commons, uses local Dockerfile
 
 In IDChain commons there is a overall en file for settings, also including all other IDChain components
-
-Updated: October 26th, 2018
 
 Note: *Cloud Agent/Agency are currently terms used interchangeably. There seems no clear and valid written description on roles and components in Hyperledger Indy yet (as of 09/03/2018).
 
