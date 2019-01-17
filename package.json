@@ -5,7 +5,7 @@
   "description": "Cloud Agent Implementation for IdentityChain Project",
   "keywords": [],
   "author": "SNET - TU Berlin",
-  "license": "",
+  "license": "Apache-2.0",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
