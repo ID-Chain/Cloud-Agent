@@ -1,6 +1,6 @@
 const fs = require('fs');
+const path = require('path');
 const uuid = require('uuid/v4');
-const indy = require('indy-sdk');
 
 const pool = require('../lib/pool');
 const db = require('../persistence/db');
@@ -9,10 +9,10 @@ const log = require('../util/log').log;
 const wrap = require('../util/asyncwrap').wrap;
 const APIResult = require('../util/api-result');
 
-const pool_path = `${__dirname}/../${pool.config.genesis_txn}`
-const pool_info = fs.readFileSync(pool_path, 'utf8');
-const http_secured = process.env.SSL ? 'http://' : 'https://';
-const ENDPOINT_PATH = `${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/indy/`;
+const pool_path = path.resolve(`${__dirname}/../${pool.config.genesis_txn}`);
+const http_secured = process.env.IDC_CA_SSL ? 'http://' : 'https://';
+const ENDPOINT_PATH = `${http_secured}${process.env.IDC_CA_DOMAIN_HOST}:${process.env.IDC_CA_DOMAIN_PORT}/ca/api/indy/`;
+let pool_info = "";
 
 module.exports = {
     serve: wrap(async (req, res, next) => {
@@ -33,6 +33,7 @@ async function handleRequest(req) {
     const senderDid = req.body.endpoint_did,
         senderKey = req.body.verkey,
         token = req.body.endpoint;
+    if (!pool_info) pool_info = await fs.readFileSync(pool_path, 'utf8');
     let myEndpointDid;
     try {
         await lib.sdk.storeTheirDid(req.wallet.handle, { did: senderDid, verkey: senderKey });

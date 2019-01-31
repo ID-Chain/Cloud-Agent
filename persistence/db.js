@@ -2,7 +2,7 @@
  * LevelDB Setup 
  */
 const fs = require('fs');
-const dir = process.env.DB_PATH;
+const dir = process.env.IDC_CA_DB_PATH;
 if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
 }

@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  cloud-agent:
+    build:
+      context: .
+    container_name: idchain-cloud-agent
+    image: idchain/cloud-agent
+    environment:
+      - IDC_CA_APP_HOST
+      - IDC_CA_APP_PORT=${IDC_CA_APP_PORT-8005}
+      - IDC_CA_DOMAIN_HOST
+      - IDC_CA_DOMAIN_PORT
+      - IDC_CA_DB_PATH=${IDC_CA_DB_PATH-'./data'}
+      - IDC_CA_WALLET_NAME=${IDC_CA_DB_PATH-caWallet}
+      - IDC_CA_SECRET=${IDC_CA_SECRET-changeMe}
+      - IDC_CA_FIREBASE_PROJECT_URL
+      - IDC_CA_FIREBASE_ADMIN_SDK_FILE_HOST_PATH
+      - IDC_POOL_IP
+      - IDC_POOL_INFO_PORT
+      - IDC_POOL_NAME
+      - IDC_CA_GENESIS_TXN
+      - IDC_CA_SSL
+      - IDC_CA_LOG_LEVEL
+      - RUST_LOG
+    volumes:
+      - ${IDC_CA_FIREBASE_ADMIN_SDK_FILE_HOST_PATH}:/home/indy/app/config:ro
+    ports:
+      - ${IDC_CA_APP_PORT-8005}:${IDC_CA_APP_PORT-8005}
+
+
+ 
+

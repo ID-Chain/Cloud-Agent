@@ -1,0 +1,84 @@
+##
+##     ________  ________  _____    _____   __
+##    /  _/ __ \/ ____/ / / /   |  /  _/ | / /
+##    / // / / / /   / /_/ / /| |  / //  |/ /
+##  _/ // /_/ / /___/ __  / ___ |_/ // /|  /
+## /___/_____/\____/_/ /_/_/  |_/___/_/ |_/
+##
+## ----> Cloud Agent
+##
+## Please copy this file into a new file with name .env,
+## and adjust the following variables to match your environment
+## ↓↓↓↓
+
+## ------------------------------------------------------------------------------------
+## CA Host & Port
+## ↓↓↓↓-------------------------------------------------------------------------------
+
+IDC_CA_APP_HOST=127.0.1.1
+IDC_CA_APP_PORT=8005
+
+## ------------------------------------------------------------------------------------
+## CA Domain Details
+##
+##  SSL (default false), host & port (Reachable by other agents)
+##  These values will be shared in the connection offer messages
+##  sent to connect with other agents
+## ↓↓↓↓-------------------------------------------------------------------------------
+
+IDC_CA_SSL=http
+IDC_CA_DOMAIN_HOST=127.0.1.1
+IDC_CA_DOMAIN_PORT=8005
+
+## ------------------------------------------------------------------------------------
+## Wallet Name, Cloud Agent DID Seed and Secret
+##
+## IMPORTANT!! Change it for any non dev/test environment
+## ↓↓↓↓-------------------------------------------------------------------------------
+###
+IDC_CA_WALLET_NAME='idc-ca-wallet'
+IDC_CA_SEED='0000000000000000000000CloudAgent'
+IDC_CA_SECRET='my-secret'
+
+## ------------------------------------------------------------------------------------
+##  Firebase Credentials
+##
+##  See firebase official documentation to register your account and get ADMIN SDK json file
+##  And project URL. The Host location path will be mounted into the container use it to load
+##  the secret AdminSDK json file.
+## ↓↓↓↓-------------------------------------------------------------------------------
+IDC_CA_FIREBASE_ADMIN_SDK_FILE_HOST_PATH=/home/arturo/Projects/identity/eit/gh/config
+IDC_CA_FIREBASE_PROJECT_URL='https://idchain-cloudagent.firebaseio.com'
+
+## ------------------------------------------------------------------------------------
+## CA Log Level & Rust (for libindy)
+## ↓↓↓↓-------------------------------------------------------------------------------
+RUST_LOG=debug
+IDC_CA_LOG_LEVEL=debug
+
+## ------------------------------------------------------------------------------------
+## CA Database Parameters
+## ↓↓↓↓-------------------------------------------------------------------------------
+IDC_CA_DB_PATH='./data'
+
+## ------------------------------------------------------------------------------------
+## Pool IP
+## Will be used to generate pool transaction genesis file
+## If there is a need to make it reachable from the outside,
+## please make sure it matches the PUBLIC IP of the machine
+##
+## If running in the Cloud, please run the script display-cloud-info.sh
+## ↓↓↓↓-------------------------------------------------------------------------------
+
+IDC_POOL_IP=172.16.0.200
+
+## ------------------------------------------------------------------------------------
+## Genesis Transaction Genesis File Path & Static Info Port (test-pool only)
+##
+## Will be used by the IEA API to connect with the ledger
+##  If there is no file, will try to request the pool transaction genesis file
+##  using the static info port
+## ↓↓↓↓-------------------------------------------------------------------------------
+
+IDC_CA_GENESIS_TXN=./pool_transactions_genesis
+IDC_POOL_INFO_PORT=8001

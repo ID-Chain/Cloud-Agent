@@ -7,8 +7,8 @@ const firebaseServer = require('../firebase/server');
 const db = require('../persistence/db');
 const lib = require('../lib');
 
-const http_secured = process.env.SSL === 'true' ? 'https://' : 'http://';
-const MESSAGES_PATH = `${http_secured}${process.env.DOMAIN_HOST}:${process.env.DOMAIN_PORT}/ca/api/messages/`;
+const http_secured = process.env.IDC_CA_SSL === 'true' ? 'https://' : 'http://';
+const MESSAGES_PATH = `${http_secured}${process.env.IDC_CA_DOMAIN_HOST}:${process.env.IDC_CA_DOMAIN_PORT}/ca/api/messages/`;
 
 module.exports = {
     forward: wrap(async (req, res, next) => {

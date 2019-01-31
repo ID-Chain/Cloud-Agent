@@ -1,4 +1,6 @@
 data/
+firebase-adminsdk.json
+pool_transactions_genesis*
 # Created by https://www.gitignore.io/api/vim,node,linux,emacs,macos,jetbrains,visualstudiocode
 
 ### Emacs ###

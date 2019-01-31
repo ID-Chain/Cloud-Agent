@@ -49,41 +49,41 @@ For a brief overview on which parameters are required for a working deployment, 
 ### Firebase Cloud Messaging
 The implementation of the IDChain Cloud Agent implements Firebase Cloud Messaging (FCM) for communication with mobile applications. A prior registration of a project at http://console.firebase.google.com is required to use FCM. Set the following env-variables accordingly. The file we currently used was uploaded to the servers. Current name: 'eit-idchain-app-firebase-adminsdk.json'. It was generated with Bersant Google account and used for the time being.
 
-`FIREBASE_ADMIN_PATH='/path/to/xxx-adminsdk.json'`
+`IDC_CA_FIREBASE_ADMIN_PATH='/path/to/xxx-adminsdk.json'`
 
-`FIREBASE_PROJECT_URL='https://xxx.firebaseio.com'`
+`IDC_CA_FIREBASE_PROJECT_URL='https://xxx.firebaseio.com'`
 
 ### LevelDB
 The Cloud Agent uses LevelDB for storing data and keeping track of the connections between unique URLs provided to App instances and FCM Tokens. Make sure the application has write access to the path set as described below.
 
-`DB_PATH='./data'`
+`IDC_CA_DB_PATH='./data'`
 
 ### Hyperledger Indy Pool Access
 
 The Cloud Agent requires access to a Hyperledger Indy ledger pool in order to verify DIDs and Endpoints. For this connection a name and the pool transactions genesis of the pool is required.
 
-`POOL_IP=172.16.0.100`
+`IDC_POOL_IP=172.16.0.100`
 
-`POOL_NAME=poolApi`
+`IDC_POOL_NAME=poolApi`
 
-`GENESIS_TXN=pool_transactions_genesis.docker-compose`
+`IDC_CA_GENESIS_TXN=pool_transactions_genesis.docker-compose`
 
 ## Deployment Parameters
 The application runs on the host and port defined in the environment variables.
 
-`CA_APP_HOST=127.0.1.1`
+`IDC_CA_APP_HOST=127.0.1.1`
 
-`CA_APP_PORT=8080`
+`IDC_CA_APP_PORT=8080`
 
 In addition for providing unique URLs to mobile apps, the application requires additional settings for the domain and port where the Cloud Agent is actively run at.
 
-`DOMAIN_HOST=127.0.1.1`
+`IDC_CA_DOMAIN_HOST=127.0.1.1`
 
-`DOMAIN_PORT=8080`
+`IDC_CA_DOMAIN_PORT=8080`
 
 Finally, the Cloud Agent implements a Hyperledger Indy Wallet which is used for storing own and foreign DID information, encrypting and decrypting outgoing and incoming messages. Therefore the following env-variables need to be set.
 
-`CA_WALLET_NAME='example_ca_wallet_name'`
+`IDC_CA_WALLET_NAME='example_ca_wallet_name'`
 
 `SECRET='your-secret'`
 

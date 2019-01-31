@@ -11,7 +11,7 @@ class APIResult {
      * @param {Object} data response data
      * @param {Object} error an error
      */
-    constructor(status, data, error) {
+    constructor(status, data={}, error="") {
         this.status = status;
         this.data = data;
         this.error = error;

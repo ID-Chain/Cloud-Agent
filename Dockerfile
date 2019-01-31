@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 ARG uid=1000
 ARG indy_stream=stable
 
-ENV DB_PATH=${DB_PATH:-/home/indy/app/data/db}
+ENV IDC_CA_DB_PATH=${IDC_CA_DB_PATH:-/home/indy/app/data/db}
 ENV LC_ALL="C.UTF-8"
 ENV LANG="C.UTF-8"
 ENV SHELL="/bin/bash"
@@ -46,8 +46,9 @@ RUN apt-get update && apt-get install -y libindy nodejs
 
 USER indy
 RUN mkdir -p /home/indy/app/data/db
+RUN mkdir -p /home/indy/app/config
 WORKDIR /home/indy/app
-VOLUME ["$DB_PATH"]
+VOLUME ["$IDC_CA_DB_PATH", "/home/indy/app/config"]
 
 # install app dependencies
 COPY --chown=indy:indy package.json package-lock.json /home/indy/app/
