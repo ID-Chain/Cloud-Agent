@@ -13,7 +13,7 @@
     "test": "NODE_ENV=testing mocha "
   },
   "dependencies": {
-    "ajv": "^6.5.1",
+    "ajv": "^6.12.3",
     "bcrypt": "^3.0.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
